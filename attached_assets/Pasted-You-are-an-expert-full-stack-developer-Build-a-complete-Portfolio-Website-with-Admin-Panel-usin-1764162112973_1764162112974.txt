@@ -1,0 +1,109 @@
+You are an expert full-stack developer.  
+Build a complete Portfolio Website with Admin Panel, using the following requirements:
+
+====================
+📌 PROJECT REQUIREMENTS
+====================
+
+TECH STACK:
+- Frontend: HTML, CSS, JavaScript, Bootstrap or TailwindCSS
+- Backend: Node.js (Express) OR Python Flask (choose best)
+- Database: MySQL
+- ORM: Sequelize / Prisma (if Node) or SQLAlchemy (if Flask)
+- Authentication: JWT-based or Session-based login
+- Hosting: Create Dockerfile + docker-compose.yml (with MySQL container)
+- Provide instructions to run locally and in Docker.
+
+====================
+📌 FRONTEND FEATURES (PUBLIC PAGE)
+====================
+
+Build a single-page portfolio website with sections:
+
+1. **Home** – profile photo, name, short intro  
+2. **Skills** – list of skills fetched from database  
+3. **Projects** – dynamic cards with title, description, tech stack, GitHub link, live link  
+4. **GitHub** – show GitHub icon that redirects to my GitHub URL stored in DB  
+5. **Blog** – cards for posts stored in DB (title, date, short content, read more…)  
+6. **Contact / Get in Touch** – contact form (name, email, message) stored in DB  
+7. **Download Resume** – button to download PDF resume uploaded via admin  
+8. **Social Logos** – GitHub, LinkedIn, Gmail icons (values fetched from DB)  
+9. **Admin Login Button** – at bottom right of page
+
+====================
+📌 ADMIN PANEL FEATURES
+====================
+
+Admin can login securely and perform FULL CRUD:
+
+✔ Manage Home section (intro, photo)  
+✔ Add / Edit / Delete Skills  
+✔ Add / Edit / Delete Projects  
+✔ Add / Edit / Delete Blog posts  
+✔ Edit GitHub / LinkedIn / Email links  
+✔ Upload / Replace Resume (PDF)  
+✔ View Contact form messages  
+✔ Dashboard with menu for each module  
+✔ Logout button  
+✔ Protect all routes with session/JWT auth
+
+====================
+📌 BACKEND REQUIREMENTS
+====================
+
+Create database tables:
+- admin (username, password hashed)
+- skills
+- projects
+- blog_posts
+- contact_messages
+- social_links
+- hero_section (home info)
+- resume (file path)
+
+APIs must support:
+- GET/POST/PUT/DELETE for Skills  
+- GET/POST/PUT/DELETE for Projects  
+- GET/POST/PUT/DELETE for Blog  
+- GET/PUT for Social Links  
+- POST for contact form  
+- File upload API for resume & images  
+- Admin login/logout authentication
+
+====================
+📌 FILE UPLOAD
+====================
+- Save profile image, project images, and resume in `/uploads/`
+- Store file paths in database
+
+====================
+📌 DOCKER
+====================
+
+Provide:
+
+1. Dockerfile for app  
+2. docker-compose.yml with:
+   - app service  
+   - MySQL database service  
+   - volumes for DB and uploads folder  
+
+====================
+📌 FINAL OUTPUT
+====================
+
+Deliver:
+
+✔ Complete working code  
+✔ Folder structure  
+✔ SQL schema auto-created  
+✔ Instructions:
+   - How to run locally  
+   - How to run using Docker  
+✔ Include sample admin credentials in README  
+✔ Make UI clean, modern, responsive  
+✔ Add good color theme & fonts  
+
+====================
+
+Build the full application now.

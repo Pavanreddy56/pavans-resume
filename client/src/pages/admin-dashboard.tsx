@@ -342,6 +342,7 @@ function DashboardView() {
 
 function HeroView({ token }: { token: string | null }) {
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
   const { data: hero, isLoading } = useQuery<Hero>({
     queryKey: ["/api/hero"],
   });
@@ -373,6 +374,51 @@ function HeroView({ token }: { token: string | null }) {
       });
     }
   }, [hero, form]);
+
+  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("/api/hero/upload-image", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      form.setValue("profileImage", data.profileImage);
+      queryClient.invalidateQueries({ queryKey: ["/api/hero"] });
+      toast({ title: "Success", description: "Profile image uploaded successfully" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload profile image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const updateMutation = useMutation({
     mutationFn: async (data: z.infer<typeof heroSchema>) => {
@@ -465,9 +511,33 @@ function HeroView({ token }: { token: string | null }) {
               name="profileImage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Profile Image URL (optional)</FormLabel>
+                  <FormLabel>Profile Picture</FormLabel>
                   <FormControl>
-                    <Input {...field} data-testid="input-hero-image" />
+                    <div className="space-y-4">
+                      {field.value && (
+                        <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-border">
+                          <img
+                            src={field.value}
+                            alt="Profile preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <label className="flex items-center justify-center gap-2 p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                        <Upload className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-muted-foreground">
+                          {uploading ? "Uploading..." : "Click to upload image"}
+                        </span>
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfileImageUpload}
+                        disabled={uploading}
+                        data-testid="input-upload-profile-image"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -2047,7 +2117,7 @@ function ResumeView({ token }: { token: string | null }) {
                 <div className="flex gap-2">
                   <a href="/api/resume/download" download>
                     <Button variant="outline" data-testid="button-download-resume-admin">
-                      <Download className="mr-2 h-4 w-4" />
+                      <FileDown className="mr-2 h-4 w-4" />
                       Download
                     </Button>
                   </a>

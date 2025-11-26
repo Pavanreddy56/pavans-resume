@@ -56,8 +56,6 @@ export const blogPosts = pgTable("blog_posts", {
   title: text("title").notNull(),
   content: text("content").notNull(),
   excerpt: text("excerpt"),
-  category: text("category"),
-  tags: text("tags").array().default([]),
   publishedAt: timestamp("published_at").defaultNow(),
   published: boolean("published").default(true),
 });

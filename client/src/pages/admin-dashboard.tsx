@@ -855,6 +855,7 @@ function ProjectsView({ token }: { token: string | null }) {
   const { toast } = useToast();
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const { data: projects, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
@@ -975,6 +976,50 @@ function ProjectsView({ token }: { token: string | null }) {
       });
     },
   });
+
+  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("/api/projects/upload-image", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      form.setValue("image", data.image);
+      toast({ title: "Success", description: "Project image uploaded successfully" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload project image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onSubmit = (data: z.infer<typeof projectSchema>) => {
     if (editingProject) {
@@ -1106,13 +1151,33 @@ function ProjectsView({ token }: { token: string | null }) {
                   name="image"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Image URL (optional)</FormLabel>
+                      <FormLabel>Project Image</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="https://..."
-                          {...field}
-                          data-testid="input-project-image"
-                        />
+                        <div className="space-y-4">
+                          {field.value && (
+                            <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
+                              <img
+                                src={field.value}
+                                alt="Project preview"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <label className="flex items-center justify-center gap-2 p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                            <Upload className="h-5 w-5 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              {uploading ? "Uploading..." : "Click to upload image"}
+                            </span>
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleProjectImageUpload}
+                            disabled={uploading}
+                            data-testid="input-upload-project-image"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

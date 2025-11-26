@@ -506,6 +506,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/projects/upload-image", upload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const imagePath = `/uploads/${req.file.filename}`;
+      res.json({ image: imagePath });
+    } catch (error) {
+      console.error("Upload project image error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/hero/upload-image", upload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const imagePath = `/uploads/${req.file.filename}`;
+      res.json({ profileImage: imagePath });
+    } catch (error) {
+      console.error("Upload profile image error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.use("/uploads", (req, res, next) => {
     res.sendFile(path.join(uploadDir, req.path));
   });

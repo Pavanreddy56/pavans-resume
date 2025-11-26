@@ -76,10 +76,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let admin = await storage.getAdminByUsername(username);
 
       if (!admin) {
-        if (username === "admin" && password === "admin123") {
+        if (username === "Pavan56" && password === "Pavanreddy56@") {
           const hashedPassword = await bcrypt.hash(password, 10);
           admin = await storage.createAdmin({
-            username: "admin",
+            username: "Pavan56",
             password: hashedPassword,
           });
         } else {

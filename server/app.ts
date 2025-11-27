@@ -8,7 +8,6 @@ import express, {
 } from "express";
 
 import { registerRoutes } from "./routes";
-import { initializeDatabase } from "./init-db";
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -68,12 +67,6 @@ app.use((req, res, next) => {
 export default async function runApp(
   setup: (app: Express, server: Server) => Promise<void>,
 ) {
-  try {
-    await initializeDatabase();
-  } catch (error) {
-    log("Database initialization warning (may already exist): " + (error as any).message);
-  }
-
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

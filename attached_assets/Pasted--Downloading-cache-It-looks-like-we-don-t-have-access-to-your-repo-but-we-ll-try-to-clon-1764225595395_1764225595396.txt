@@ -1,0 +1,60 @@
+==> Downloading cache...
+==> It looks like we don't have access to your repo, but we'll try to clone it anyway.
+==> Cloning from https://github.com/Pavanreddy56/pavans-resume
+	status code: 403, request id: DWREBK6E7B6EKCWD, host id: h2v5ZD7n0PH2u08Ja5JdUF55wSpmEV2IHzakVq+t81NExzvVX2amtwBfGPC2tArrtN7R3fq8oCc=
+==> No cache found, continuing without cache
+==> Checking out commit 7d40790905f838d7bce9384e75df90e668f6a0e1 in branch main
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'npm install; npm run build'...
+added 506 packages, and audited 507 packages in 8s
+65 packages are looking for funding
+  run `npm fund` for details
+9 vulnerabilities (3 low, 5 moderate, 1 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index-prod.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+vite v5.4.20 building for production...
+transforming...
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 1735 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                                                     1.41 kB │ gzip:   0.64 kB
+../dist/public/assets/WhatsApp Image 2025-09-09 at 11.21.43 AM_1764162148262-BAriL73w.jpeg   90.08 kB
+../dist/public/assets/index-BBHNolwk.css                                                     78.57 kB │ gzip:  12.74 kB
+../dist/public/assets/index-B8zTi-GD.js                                                     508.81 kB │ gzip: 150.42 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.75s
+  dist/index.js  29.8kb
+⚡ Done in 6ms
+==> Uploading build...
+==> Uploaded in 5.8s. Compression took 3.0s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Initializing database...
+✗ Database initialization error: ErrorEvent {
+  type: 'error',
+  defaultPrevented: false,
+  cancelable: false,
+  timeStamp: 6308.575275
+}
+6:39:29 AM [express] Database initialization warning (may already exist): Received network error or non-101 status code.
+6:39:29 AM [express] serving on port 10000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://pavans-resume.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////

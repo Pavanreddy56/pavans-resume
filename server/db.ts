@@ -1,17 +1,6 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
-
-// Force HTTP-only connections by completely disabling WebSocket
-neonConfig.webSocketConstructor = undefined;
-
-// Explicitly configure HTTP endpoint
-neonConfig.fetchEndpoint = (host) => {
-  return `https://${host}/sql`;
-};
-
-// Disable connection pooling for better serverless compatibility
-neonConfig.poolQueryViaFetch = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -19,5 +8,12 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Use standard pg client for better compatibility with all hosting environments
+export const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 1, // Minimal pooling for serverless
+  idleTimeoutMillis: 5000,
+  connectionTimeoutMillis: 5000,
+});
+
 export const db = drizzle({ client: pool, schema });

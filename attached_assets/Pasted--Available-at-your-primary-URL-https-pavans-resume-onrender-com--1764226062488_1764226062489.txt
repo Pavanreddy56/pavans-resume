@@ -1,0 +1,48 @@
+==> Available at your primary URL https://pavans-resume.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+Get projects error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:412:25
+6:47:06 AM [express] GET /api/projects 500 in 18ms :: {"message":"Internal server error"}
+Get resume error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getResume (file:///opt/render/project/src/dist/index.js:243:17)
+    at async file:///opt/render/project/src/dist/index.js:629:26
+6:47:06 AM [express] GET /api/resume 500 in 2ms :: {"message":"Internal server error"}
+Get skills error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:360:23
+6:47:06 AM [express] GET /api/skills 500 in 2ms :: {"message":"Internal server error"}
+Get social links error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:529:21
+6:47:06 AM [express] GET /api/social-links 500 in 2ms :: {"message":"Internal server error"}
+Get hero error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getHero (file:///opt/render/project/src/dist/index.js:135:20)
+    at async file:///opt/render/project/src/dist/index.js:329:20
+6:47:06 AM [express] GET /api/hero 500 in 3ms :: {"message":"Internal server error"}
+Get blog posts error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:464:21
+6:47:06 AM [express] GET /api/blog 500 in 1ms :: {"message":"Internal server error"}
+Login error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getAdminByUsername (file:///opt/render/project/src/dist/index.js:127:21)
+    at async file:///opt/render/project/src/dist/index.js:302:19
+6:47:24 AM [express] POST /api/admin/login 500 in 3ms :: {"message":"Internal server error"}

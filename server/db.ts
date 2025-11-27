@@ -2,10 +2,16 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from "@shared/schema";
 
-// Force HTTP-only mode by providing a dummy WebSocket constructor
-// that causes fallback to HTTP
-class DummyWebSocket {}
-neonConfig.webSocketConstructor = DummyWebSocket as any;
+// Force HTTP-only connections by completely disabling WebSocket
+neonConfig.webSocketConstructor = undefined;
+
+// Explicitly configure HTTP endpoint
+neonConfig.fetchEndpoint = (host) => {
+  return `https://${host}/sql`;
+};
+
+// Disable connection pooling for better serverless compatibility
+neonConfig.poolQueryViaFetch = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(

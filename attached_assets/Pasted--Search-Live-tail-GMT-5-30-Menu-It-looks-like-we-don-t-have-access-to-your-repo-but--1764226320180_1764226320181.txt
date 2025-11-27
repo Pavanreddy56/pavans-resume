@@ -1,0 +1,102 @@
+
+Search
+
+Live tail
+GMT+5:30
+
+Menu
+
+==> It looks like we don't have access to your repo, but we'll try to clone it anyway.
+==> Cloning from https://github.com/Pavanreddy56/pavans-resume
+==> Checking out commit 666764218197b805500bcf8429d41a8a22377462 in branch main
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'npm install; npm run build'...
+added 506 packages, and audited 507 packages in 9s
+65 packages are looking for funding
+  run `npm fund` for details
+9 vulnerabilities (3 low, 5 moderate, 1 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index-prod.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+vite v5.4.20 building for production...
+transforming...
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 1735 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                                                     1.41 kB │ gzip:   0.64 kB
+../dist/public/assets/WhatsApp Image 2025-09-09 at 11.21.43 AM_1764162148262-BAriL73w.jpeg   90.08 kB
+../dist/public/assets/index-BBHNolwk.css                                                     78.57 kB │ gzip:  12.74 kB
+../dist/public/assets/index-B8zTi-GD.js                                                     508.81 kB │ gzip: 150.42 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.31s
+  dist/index.js  27.6kb
+⚡ Done in 5ms
+==> Uploading build...
+==> Uploaded in 6.5s. Compression took 3.7s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+6:50:55 AM [express] serving on port 10000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://pavans-resume.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+Get hero error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getHero (file:///opt/render/project/src/dist/index.js:135:20)
+    at async file:///opt/render/project/src/dist/index.js:329:20
+6:51:27 AM [express] GET /api/hero 500 in 24ms :: {"message":"Internal server error"}
+Get social links error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:529:21
+6:51:27 AM [express] GET /api/social-links 500 in 2ms :: {"message":"Internal server error"}
+Get skills error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:360:23
+6:51:27 AM [express] GET /api/skills 500 in 1ms :: {"message":"Internal server error"}
+Get blog posts error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:464:21
+6:51:27 AM [express] GET /api/blog 500 in 1ms :: {"message":"Internal server error"}
+Get resume error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getResume (file:///opt/render/project/src/dist/index.js:243:17)
+    at async file:///opt/render/project/src/dist/index.js:629:26
+6:51:27 AM [express] GET /api/resume 500 in 2ms :: {"message":"Internal server error"}
+Get projects error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async file:///opt/render/project/src/dist/index.js:412:25
+6:51:27 AM [express] GET /api/projects 500 in 3ms :: {"message":"Internal server error"}
+Login error: Error: All attempts to open a WebSocket to connect to the database failed. Please refer to https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined. Details: fetch failed
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getAdminByUsername (file:///opt/render/project/src/dist/index.js:127:21)
+    at async file:///opt/render/project/src/dist/index.js:302:19
+6:51:42 AM [express] POST /api/admin/login 500 in 3ms :: {"message":"Internal server error"}

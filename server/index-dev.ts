@@ -427,7 +427,7 @@ app.post("/api/admin/login", async (req, res) => {
 });
 
 // Serve static frontend files
-const clientDir = join(__dirname, "../client/dist");
+const clientDir = join(__dirname, "../dist/public");
 app.use(express.static(clientDir));
 
 // Fallback to index.html for React Router client-side routing

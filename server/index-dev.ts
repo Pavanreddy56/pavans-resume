@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import express from "express";
 import { createServer } from "http";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { createViteServer } from "vite";
 import { DynamoDBStorage } from "./dynamodb-storage";
 import {
   insertSkillSchema,
@@ -13,6 +16,7 @@ import {
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const storage = new DynamoDBStorage();
 const JWT_SECRET = process.env.SESSION_SECRET || "portfolio-secret-key-dev";

@@ -1,77 +1,83 @@
-# Portfolio Website with Admin Panel
+# Portfolio Website - AWS Serverless Architecture
 
 ## Overview
-A complete portfolio website for Pavan Reddy Cheedeti, DevOps Engineer, with a secure admin panel for managing content.
+DevOps engineer portfolio with secure admin panel, deployed on AWS serverless infrastructure (Lambda, DynamoDB, API Gateway, S3).
+
+## Current Architecture (AWS Serverless)
+
+```
+Frontend (S3)
+    ↓ HTTPS via API Gateway
+Lambda Functions (Node.js)
+    ↓ CRUD operations
+DynamoDB Tables (NoSQL)
+```
 
 ## Tech Stack
 - **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI
-- **Backend**: Express.js, Node.js
-- **Database**: PostgreSQL (Neon) with Drizzle ORM
-- **Authentication**: JWT-based admin authentication
+- **Backend**: AWS Lambda (Node.js 18+)
+- **Database**: DynamoDB (8 tables)
+- **API**: API Gateway + Lambda
+- **Storage**: S3 (Frontend + File uploads)
+- **Authentication**: JWT
 
 ## Project Structure
 ```
-client/
-├── src/
-│   ├── components/        # Reusable UI components
-│   │   ├── ui/           # Shadcn UI components
-│   │   ├── theme-provider.tsx
-│   │   └── theme-toggle.tsx
-│   ├── lib/
-│   │   ├── auth.tsx      # Auth context
-│   │   ├── queryClient.ts
-│   │   └── utils.ts
-│   └── pages/
-│       ├── home.tsx           # Public portfolio page
-│       ├── admin-login.tsx    # Admin login page
-│       ├── admin-dashboard.tsx # Admin panel
-│       └── not-found.tsx
 server/
-├── db.ts                 # Database connection
-├── storage.ts            # Database storage interface
-├── routes.ts             # API endpoints
-└── app.ts
+├── dynamodb-storage.ts    # DynamoDB operations
+├── lambda-handler.ts      # Lambda event handler
+└── index-prod.ts         # Production entry point
+
 shared/
-└── schema.ts             # Drizzle schema definitions
+└── schema.ts             # Data types & validation
+
+client/
+├── src/                  # React components
+└── dist/                 # Built frontend (S3 deployment)
+
+docs/
+├── DEPLOYMENT.md         # Step-by-step AWS deployment
+└── AWS_DEPLOYMENT_GUIDE.md # Detailed reference guide
 ```
 
-## Features
+## Key Files for AWS Deployment
 
-### Public Portfolio
-- Hero section with profile photo, name, title, and intro
-- Skills section grouped by category
-- Projects grid with tech stack badges and links
-- Blog posts section
-- Contact form
-- Social media links (GitHub, LinkedIn, Email)
-- Resume download button
-- Dark/Light theme toggle
+| File | Purpose |
+|------|---------|
+| `server/dynamodb-storage.ts` | DynamoDB CRUD operations for all data |
+| `server/lambda-handler.ts` | AWS Lambda event handler for API routes |
+| `DEPLOYMENT.md` | Step-by-step deployment guide (START HERE) |
+| `AWS_DEPLOYMENT_GUIDE.md` | Detailed reference with troubleshooting |
+| `shared/schema.ts` | TypeScript types for all data models |
 
-### Admin Panel
-- Secure JWT authentication
-- Dashboard with stats overview
-- CRUD operations for:
-  - Home section (profile info)
-  - Skills (grouped by category)
-  - Projects (with tech stack, URLs, images)
-  - Blog posts (with publish/draft toggle)
-  - Social links
-  - Contact messages (with read/unread status)
-  - Resume upload/replace
+## DynamoDB Tables
+
+1. `portfolio-admins` - Admin authentication
+2. `portfolio-hero` - Hero section (profile info)
+3. `portfolio-skills` - Technical skills
+4. `portfolio-projects` - Portfolio projects
+5. `portfolio-blog` - Blog posts
+6. `portfolio-messages` - Contact form submissions
+7. `portfolio-social` - Social media links
+8. `portfolio-resume` - Resume file metadata
+
+## Admin Credentials
+- **Username**: `Pavan56`
+- **Password**: `Pavanreddy56@`
 
 ## API Endpoints
 
-### Public
-- `GET /api/hero` - Get hero section data
+### Public (No Auth)
+- `GET /api/hero` - Get profile info
 - `GET /api/skills` - Get all skills
 - `GET /api/projects` - Get all projects
-- `GET /api/blog` - Get all blog posts
+- `GET /api/blog` - Get blog posts
 - `GET /api/social-links` - Get social links
 - `POST /api/contact` - Submit contact form
-- `GET /api/resume/download` - Download resume
+- `GET /api/resume` - Get resume info
 
-### Admin (Protected)
-- `POST /api/admin/login` - Admin login
+### Admin (JWT Protected)
+- `POST /api/admin/login` - Get JWT token
 - `PUT /api/hero` - Update hero section
 - `POST/PUT/DELETE /api/skills/:id` - Manage skills
 - `POST/PUT/DELETE /api/projects/:id` - Manage projects
@@ -80,53 +86,81 @@ shared/
 - `GET /api/messages` - View contact messages
 - `PUT /api/messages/:id/read` - Mark message as read
 - `DELETE /api/messages/:id` - Delete message
-- `POST /api/resume/upload` - Upload resume
+- `PUT /api/resume` - Update resume
 - `DELETE /api/resume` - Delete resume
 
-## Default Admin Credentials
-- **Username**: admin
-- **Password**: admin123
+## Deployment
 
-## Running the Application
-The application runs on port 5000. Use the "Start application" workflow to run `npm run dev`.
+### Quick Start
+1. Follow **DEPLOYMENT.md** step-by-step (5 phases, ~45 minutes)
+2. Configure AWS credentials
+3. Create DynamoDB tables
+4. Deploy Lambda function
+5. Set up API Gateway
+6. Upload frontend to S3
 
-## Database
-PostgreSQL database with the following tables:
-- `admins` - Admin users
-- `hero_section` - Hero/home section content
-- `skills` - Technical skills
-- `projects` - Portfolio projects
-- `blog_posts` - Blog posts
-- `contact_messages` - Contact form submissions
-- `social_links` - Social media links
-- `resume` - Resume file info
+### Cost
+- **Lambda**: Free tier (1M requests/month)
+- **DynamoDB**: Pay-per-request (~$1.25/million reads)
+- **API Gateway**: $3.50/million calls
+- **S3**: $0.023/GB stored
+- **Estimated**: $5-15/month
+
+## Features
+
+### Public Portfolio
+- Hero section with profile details
+- Skills grouped by category
+- Projects with tech stack badges
+- Blog posts
+- Contact form
+- Social links
+- Resume download
+- Dark/Light theme toggle
+
+### Admin Panel
+- Secure JWT authentication
+- Dashboard stats
+- Full CRUD for all content:
+  - Profile information
+  - Skills management
+  - Project uploads (images)
+  - Blog post publishing
+  - Social media links
+  - Contact message viewing
+  - Resume management
+
+## Design
+- **Colors**: Blue primary (#1E5EFF), professional DevOps aesthetic
+- **Typography**: Inter font for body, JetBrains Mono for code
+- **Theme**: Full dark mode support
+- **Responsive**: Mobile-first, works on all devices
 
 ## User Preferences
-- Modern, professional design with blue accent color
-- Inter font for body text, JetBrains Mono for code/tech labels
-- Clean, minimal aesthetic inspired by developer platforms
-- Dark mode support
+✓ AWS serverless (no servers to manage)
+✓ Pay-per-request pricing (cost-effective)
+✓ Auto-scaling (handles traffic spikes)
+✓ Low operational overhead
 
-## AWS Serverless Deployment
+## Files Removed (PostgreSQL/Express specific)
+- ❌ `server/db.ts` - PostgreSQL connection
+- ❌ `server/storage.ts` - Drizzle ORM storage
+- ❌ `server/routes.ts` - Express routes
+- ❌ `server/app.ts` - Express app
+- ❌ `server/init-db.ts` - Database init
+- ❌ `Dockerfile` - Docker container
+- ❌ `pavandocker.md` - Docker guide
+- ❌ `pavan.md` - Old deployment docs
 
-**Current Status**: Ready for AWS migration
-- DynamoDB storage layer implemented
-- Lambda handler created
-- Comprehensive AWS deployment guide provided
-- All API endpoints compatible with Lambda
+## Next Steps
+1. Read **DEPLOYMENT.md** for step-by-step instructions
+2. Get AWS credentials
+3. Run deployment phases 1-5
+4. Test your API
+5. Visit your live portfolio!
 
-**To Deploy to AWS:**
-1. Follow steps in `AWS_DEPLOYMENT_GUIDE.md`
-2. Key files:
-   - `server/dynamodb-storage.ts` - DynamoDB operations
-   - `server/lambda-handler.ts` - Lambda function handler
-   - `AWS_DEPLOYMENT_GUIDE.md` - Complete deployment guide
-
-**Architecture:**
-- Frontend: S3 + CloudFront
-- API: API Gateway + Lambda
-- Database: DynamoDB
-- Files: S3
-
-**Cost**: Estimated $5-15/month for small usage (pay-per-request)
-
+## Support
+- **AWS Lambda Docs**: https://docs.aws.amazon.com/lambda/
+- **DynamoDB Docs**: https://docs.aws.amazon.com/dynamodb/
+- **API Gateway**: https://docs.aws.amazon.com/apigateway/
+- **See DEPLOYMENT.md** for step-by-step instructions

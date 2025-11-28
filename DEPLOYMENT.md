@@ -378,20 +378,29 @@ S3 will host your website files.
 2. Search for **S3**
 3. Click on **S3**
 4. Click **Create bucket** button
-5. **Bucket name**: `my-portfolio-site-pavan` (must be globally unique - add a date/number if needed)
-6. **Region**: `us-east-1`
+5. **Bucket name**: `my-portfolio-site-pavan-2024` (must be globally unique - add a date/number if needed)
+6. **Region**: **us-east-1** (IMPORTANT: Must be us-east-1, not ap-south-1 or any other region)
 7. Leave all other settings default
 8. Click **Create bucket** button
 
 ### Step 4.2: Upload Frontend Files
 
+Your frontend files are in the `dist/public/` folder (from your Replit build).
+
 1. Click on your bucket name to open it
 2. Click **Upload** button
 3. Click **Add files**
-4. Navigate to your project's `client/dist/` folder
-5. Select **all files inside that folder** (but NOT the dist folder itself)
-6. Click **Open**
-7. Scroll down and click **Upload** button
+4. Navigate to your **`dist/public/`** folder (NOT `client/dist/`)
+5. Open the `dist/public/` folder
+6. Select **all files and folders inside it** (index.html, assets/, etc.)
+7. Make sure you upload the **contents**, not the folder itself
+8. Click **Open**
+9. Scroll down and click **Upload** button
+
+**Important:** You should see these files uploaded:
+- `index.html`
+- `assets/` (folder with CSS and JS files)
+- Any image files
 
 Wait for upload to complete.
 
@@ -448,7 +457,17 @@ Wait for upload to complete.
 3. Scroll to **Static website hosting**
 4. Under "Bucket website endpoint", you'll see your URL
 
-Example: `http://my-portfolio-site-pavan.s3-website-us-east-1.amazonaws.com`
+**Example (CORRECT):** `http://my-portfolio-site-pavan-2024.s3-website-us-east-1.amazonaws.com`
+
+**DO NOT use:** `http://my-portfolio-site-pavan.s3-website.ap-south-1.amazonaws.com` (wrong region)
+
+**Troubleshooting:**
+- If you see a blank page or 404, check:
+  - Region is `us-east-1` (not ap-south-1 or other region)
+  - You uploaded files to the **root** of the bucket (not in a subfolder)
+  - `index.html` is in the bucket root
+  - Bucket policy is correctly applied (from Step 4.5)
+  - Static website hosting is enabled (from Step 4.3)
 
 **Save this URL** - this is your live website!
 

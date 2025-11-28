@@ -300,10 +300,10 @@ API Gateway connects your frontend to Lambda.
 
 ### Step 3.1: Create API Gateway
 
-**⚠️ CRITICAL: Make sure you are in the `us-east-1` region!**
+**⚠️ CRITICAL: Make sure you are in the `ap-south-1` region!**
 
 1. Go to https://console.aws.amazon.com
-2. **Check the region in the top right corner - it should say `us-east-1`**
+2. **Check the region in the top right corner - it should say `ap-south-1`**
 3. Search for **API Gateway**
 4. Click on **API Gateway**
 5. Click **Create API** button
@@ -320,9 +320,8 @@ API Gateway connects your frontend to Lambda.
 
 **⚠️ Your URL will look like:**
 ```
-https://xxxxxx.execute-api.us-east-1.amazonaws.com/prod
+https://xxxxxx.execute-api.ap-south-1.amazonaws.com/prod
 ```
-(NOT ap-south-1 or any other region!)
 
 ### Step 3.2: Create Resources and Methods
 
@@ -373,7 +372,7 @@ For each method (GET, POST, PUT, DELETE):
 
 **Save this URL** - you'll need it for the frontend.
 
-Example: `https://abc123.execute-api.us-east-1.amazonaws.com/prod`
+Example: `https://abc123.execute-api.ap-south-1.amazonaws.com/prod`
 
 ---
 
@@ -388,7 +387,7 @@ S3 will host your website files.
 3. Click on **S3**
 4. Click **Create bucket** button
 5. **Bucket name**: `my-portfolio-site-pavan-2024` (must be globally unique - add a date/number if needed)
-6. **Region**: **us-east-1** (IMPORTANT: Must be us-east-1, not ap-south-1 or any other region)
+6. **Region**: **ap-south-1** (IMPORTANT: Keep this same region as your other services)
 7. Leave all other settings default
 8. Click **Create bucket** button
 

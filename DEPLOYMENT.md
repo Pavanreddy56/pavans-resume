@@ -300,12 +300,15 @@ API Gateway connects your frontend to Lambda.
 
 ### Step 3.1: Create API Gateway
 
+**⚠️ CRITICAL: Make sure you are in the `us-east-1` region!**
+
 1. Go to https://console.aws.amazon.com
-2. Search for **API Gateway**
-3. Click on **API Gateway**
-4. Click **Create API** button
-5. Under "REST API", click **Build** button
-6. Fill in:
+2. **Check the region in the top right corner - it should say `us-east-1`**
+3. Search for **API Gateway**
+4. Click on **API Gateway**
+5. Click **Create API** button
+6. Under "REST API", click **Build** button
+7. Fill in:
 
 | Field | Value |
 |-------|-------|
@@ -313,7 +316,13 @@ API Gateway connects your frontend to Lambda.
 | **Description** | Portfolio API Gateway |
 | **Endpoint type** | Regional |
 
-7. Click **Create API** button
+8. Click **Create API** button
+
+**⚠️ Your URL will look like:**
+```
+https://xxxxxx.execute-api.us-east-1.amazonaws.com/prod
+```
+(NOT ap-south-1 or any other region!)
 
 ### Step 3.2: Create Resources and Methods
 

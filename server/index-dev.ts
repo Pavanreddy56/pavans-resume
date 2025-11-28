@@ -3,7 +3,6 @@ import express from "express";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { createViteServer } from "vite";
 import { DynamoDBStorage } from "./dynamodb-storage";
 import {
   insertSkillSchema,
@@ -427,8 +426,17 @@ app.post("/api/admin/login", async (req, res) => {
   }
 });
 
+// Serve static frontend files
+const clientDir = join(__dirname, "../client/dist");
+app.use(express.static(clientDir));
+
+// Fallback to index.html for React Router client-side routing
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(join(clientDir, "index.html"));
+});
+
 const server = createServer(app);
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || "5000", 10);
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`[express] serving on port ${PORT}`);

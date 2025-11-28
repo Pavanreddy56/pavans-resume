@@ -213,12 +213,23 @@ Lambda will run your API code.
 
 ### Step 2.2: Build Your Frontend
 
-Before uploading Lambda, you need to build the frontend files:
+The frontend is already built in your Replit environment! Just download it:
 
-1. Open terminal/command prompt on your computer
-2. Go to your project folder
-3. Run: `npm run build`
-4. This creates a `client/dist/` folder with all your frontend files
+**Option A (Easiest):**
+1. Go to your Replit project: https://replit.com/
+2. Click on your project
+3. Look for the `dist/public/` folder in the file explorer (left sidebar)
+4. Download this folder to your computer
+
+**Option B (Build Locally on Mac/Linux):**
+If you're on Mac or Linux, you can build locally:
+```bash
+npm install
+npm run build
+```
+This creates a `dist/public/` folder with all your frontend files.
+
+**Note:** On Windows, the build command fails due to Replit-specific plugins. Just download the pre-built files from Replit instead (Option A).
 
 ### Step 2.3: Create Lambda Function
 

@@ -106,3 +106,27 @@ PostgreSQL database with the following tables:
 - Inter font for body text, JetBrains Mono for code/tech labels
 - Clean, minimal aesthetic inspired by developer platforms
 - Dark mode support
+
+## AWS Serverless Deployment
+
+**Current Status**: Ready for AWS migration
+- DynamoDB storage layer implemented
+- Lambda handler created
+- Comprehensive AWS deployment guide provided
+- All API endpoints compatible with Lambda
+
+**To Deploy to AWS:**
+1. Follow steps in `AWS_DEPLOYMENT_GUIDE.md`
+2. Key files:
+   - `server/dynamodb-storage.ts` - DynamoDB operations
+   - `server/lambda-handler.ts` - Lambda function handler
+   - `AWS_DEPLOYMENT_GUIDE.md` - Complete deployment guide
+
+**Architecture:**
+- Frontend: S3 + CloudFront
+- API: API Gateway + Lambda
+- Database: DynamoDB
+- Files: S3
+
+**Cost**: Estimated $5-15/month for small usage (pay-per-request)
+

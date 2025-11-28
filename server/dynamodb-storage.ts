@@ -1,16 +1,50 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, get, put, update, delete as deleteItem, scan, query } from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
 import type {
   Admin, InsertAdmin, Hero, InsertHero, Skill, InsertSkill,
   Project, InsertProject, BlogPost, InsertBlogPost,
   ContactMessage, InsertContactMessage, SocialLink, InsertSocialLink,
   Resume, InsertResume
 } from "@shared/schema";
-import type { IStorage } from "./storage";
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION || "us-east-1" });
 const docClient = DynamoDBDocumentClient.from(client);
+
+export interface IStorage {
+  getAdmin(id: number): Promise<Admin | undefined>;
+  getAdminByUsername(username: string): Promise<Admin | undefined>;
+  createAdmin(admin: InsertAdmin): Promise<Admin>;
+  getHero(): Promise<Hero | undefined>;
+  upsertHero(hero: InsertHero): Promise<Hero>;
+  getSkills(): Promise<Skill[]>;
+  getSkill(id: number): Promise<Skill | undefined>;
+  createSkill(skill: InsertSkill): Promise<Skill>;
+  updateSkill(id: number, skill: Partial<InsertSkill>): Promise<Skill | undefined>;
+  deleteSkill(id: number): Promise<boolean>;
+  getProjects(): Promise<Project[]>;
+  getProject(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
+  deleteProject(id: number): Promise<boolean>;
+  getBlogPosts(): Promise<BlogPost[]>;
+  getBlogPost(id: number): Promise<BlogPost | undefined>;
+  createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: number, post: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: number): Promise<boolean>;
+  getContactMessages(): Promise<ContactMessage[]>;
+  getContactMessage(id: number): Promise<ContactMessage | undefined>;
+  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  markMessageRead(id: number): Promise<boolean>;
+  deleteContactMessage(id: number): Promise<boolean>;
+  getSocialLinks(): Promise<SocialLink[]>;
+  getSocialLink(id: number): Promise<SocialLink | undefined>;
+  createSocialLink(link: InsertSocialLink): Promise<SocialLink>;
+  updateSocialLink(id: number, link: Partial<InsertSocialLink>): Promise<SocialLink | undefined>;
+  deleteSocialLink(id: number): Promise<boolean>;
+  getResume(): Promise<Resume | undefined>;
+  upsertResume(data: InsertResume): Promise<Resume>;
+  deleteResume(): Promise<boolean>;
+}
 
 export class DynamoDBStorage implements IStorage {
   // Admin operations

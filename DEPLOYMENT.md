@@ -280,14 +280,17 @@ This creates a `dist/public/` folder with all your frontend files.
 1. In the Lambda function page, scroll down to **Environment variables** section
 2. Click **Edit**
 3. Click **Add environment variable**
-4. Add these two:
+4. Add only this one:
 
 | Key | Value |
 |-----|-------|
-| `AWS_REGION` | `us-east-1` |
 | `SESSION_SECRET` | `your-random-secret-here` |
 
-4. Click **Save** button
+(Replace `your-random-secret-here` with any random string, like: `my-portfolio-secret-key-2024`)
+
+5. Click **Save** button
+
+**Note:** `AWS_REGION` is automatically set by Lambda to `us-east-1` - you don't need to add it manually. AWS doesn't allow users to modify this reserved key.
 
 ---
 

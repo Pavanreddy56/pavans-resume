@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, get, put, update, delete as deleteItem, scan, query } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import type {
   Admin, InsertAdmin, Hero, InsertHero, Skill, InsertSkill,
   Project, InsertProject, BlogPost, InsertBlogPost,
@@ -47,23 +47,22 @@ export interface IStorage {
 }
 
 export class DynamoDBStorage implements IStorage {
-  // Admin operations
   async getAdmin(id: number): Promise<Admin | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-admins",
         Key: { id: id.toString() }
       }));
       return result.Item as Admin | undefined;
     } catch (error) {
       console.error("DynamoDB getAdmin error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async getAdminByUsername(username: string): Promise<Admin | undefined> {
     try {
-      const result = await docClient.send(new query({
+      const result = await docClient.send(new QueryCommand({
         TableName: "portfolio-admins",
         IndexName: "username-index",
         KeyConditionExpression: "username = :username",
@@ -72,340 +71,282 @@ export class DynamoDBStorage implements IStorage {
       return result.Items?.[0] as Admin | undefined;
     } catch (error) {
       console.error("DynamoDB getAdminByUsername error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createAdmin(admin: InsertAdmin): Promise<Admin> {
-    try {
-      const id = uuidv4();
-      const newAdmin = { id, ...admin } as Admin;
-      await docClient.send(new put({
-        TableName: "portfolio-admins",
-        Item: newAdmin
-      }));
-      return newAdmin;
-    } catch (error) {
-      console.error("DynamoDB createAdmin error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newAdmin = { id, ...admin } as Admin;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-admins",
+      Item: newAdmin
+    }));
+    return newAdmin;
   }
 
-  // Hero section operations
   async getHero(): Promise<Hero | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-hero",
         Key: { id: "hero-1" }
       }));
       return result.Item as Hero | undefined;
     } catch (error) {
       console.error("DynamoDB getHero error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async upsertHero(hero: InsertHero): Promise<Hero> {
-    try {
-      const existing = await this.getHero();
-      const heroData = { id: "hero-1", ...hero } as Hero;
-      await docClient.send(new put({
-        TableName: "portfolio-hero",
-        Item: heroData
-      }));
-      return heroData;
-    } catch (error) {
-      console.error("DynamoDB upsertHero error:", error);
-      throw error;
-    }
+    const heroData = { id: "hero-1", ...hero } as Hero;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-hero",
+      Item: heroData
+    }));
+    return heroData;
   }
 
-  // Skills operations
   async getSkills(): Promise<Skill[]> {
     try {
-      const result = await docClient.send(new scan({
+      const result = await docClient.send(new ScanCommand({
         TableName: "portfolio-skills"
       }));
       return (result.Items as Skill[]) || [];
     } catch (error) {
       console.error("DynamoDB getSkills error:", error);
-      throw error;
+      return [];
     }
   }
 
   async getSkill(id: number): Promise<Skill | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-skills",
         Key: { id: id.toString() }
       }));
       return result.Item as Skill | undefined;
     } catch (error) {
       console.error("DynamoDB getSkill error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createSkill(skill: InsertSkill): Promise<Skill> {
-    try {
-      const id = Date.now().toString();
-      const newSkill = { id, ...skill } as Skill;
-      await docClient.send(new put({
-        TableName: "portfolio-skills",
-        Item: newSkill
-      }));
-      return newSkill;
-    } catch (error) {
-      console.error("DynamoDB createSkill error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newSkill = { id, ...skill } as Skill;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-skills",
+      Item: newSkill
+    }));
+    return newSkill;
   }
 
   async updateSkill(id: number, skill: Partial<InsertSkill>): Promise<Skill | undefined> {
-    try {
-      const existing = await this.getSkill(id);
-      if (!existing) return undefined;
-      
-      const updated = { ...existing, ...skill } as Skill;
-      await docClient.send(new put({
-        TableName: "portfolio-skills",
-        Item: updated
-      }));
-      return updated;
-    } catch (error) {
-      console.error("DynamoDB updateSkill error:", error);
-      throw error;
-    }
+    const existing = await this.getSkill(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...skill } as Skill;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-skills",
+      Item: updated
+    }));
+    return updated;
   }
 
   async deleteSkill(id: number): Promise<boolean> {
     try {
       const existing = await this.getSkill(id);
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-skills",
         Key: { id: id.toString() }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteSkill error:", error);
-      throw error;
+      return false;
     }
   }
 
-  // Projects operations
   async getProjects(): Promise<Project[]> {
     try {
-      const result = await docClient.send(new scan({
+      const result = await docClient.send(new ScanCommand({
         TableName: "portfolio-projects"
       }));
       return (result.Items as Project[]) || [];
     } catch (error) {
       console.error("DynamoDB getProjects error:", error);
-      throw error;
+      return [];
     }
   }
 
   async getProject(id: number): Promise<Project | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-projects",
         Key: { id: id.toString() }
       }));
       return result.Item as Project | undefined;
     } catch (error) {
       console.error("DynamoDB getProject error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createProject(project: InsertProject): Promise<Project> {
-    try {
-      const id = Date.now().toString();
-      const newProject = { id, ...project } as Project;
-      await docClient.send(new put({
-        TableName: "portfolio-projects",
-        Item: newProject
-      }));
-      return newProject;
-    } catch (error) {
-      console.error("DynamoDB createProject error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newProject = { id, ...project } as Project;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-projects",
+      Item: newProject
+    }));
+    return newProject;
   }
 
   async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
-    try {
-      const existing = await this.getProject(id);
-      if (!existing) return undefined;
-      
-      const updated = { ...existing, ...project } as Project;
-      await docClient.send(new put({
-        TableName: "portfolio-projects",
-        Item: updated
-      }));
-      return updated;
-    } catch (error) {
-      console.error("DynamoDB updateProject error:", error);
-      throw error;
-    }
+    const existing = await this.getProject(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...project } as Project;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-projects",
+      Item: updated
+    }));
+    return updated;
   }
 
   async deleteProject(id: number): Promise<boolean> {
     try {
       const existing = await this.getProject(id);
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-projects",
         Key: { id: id.toString() }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteProject error:", error);
-      throw error;
+      return false;
     }
   }
 
-  // Blog posts operations
   async getBlogPosts(): Promise<BlogPost[]> {
     try {
-      const result = await docClient.send(new scan({
+      const result = await docClient.send(new ScanCommand({
         TableName: "portfolio-blog"
       }));
       return (result.Items as BlogPost[]) || [];
     } catch (error) {
       console.error("DynamoDB getBlogPosts error:", error);
-      throw error;
+      return [];
     }
   }
 
   async getBlogPost(id: number): Promise<BlogPost | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-blog",
         Key: { id: id.toString() }
       }));
       return result.Item as BlogPost | undefined;
     } catch (error) {
       console.error("DynamoDB getBlogPost error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
-    try {
-      const id = Date.now().toString();
-      const newPost = {
-        id,
-        ...post,
-        publishedAt: new Date().toISOString()
-      } as BlogPost;
-      await docClient.send(new put({
-        TableName: "portfolio-blog",
-        Item: newPost
-      }));
-      return newPost;
-    } catch (error) {
-      console.error("DynamoDB createBlogPost error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newPost = {
+      id,
+      ...post,
+      publishedAt: new Date().toISOString()
+    } as BlogPost;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-blog",
+      Item: newPost
+    }));
+    return newPost;
   }
 
   async updateBlogPost(id: number, post: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
-    try {
-      const existing = await this.getBlogPost(id);
-      if (!existing) return undefined;
-      
-      const updated = { ...existing, ...post } as BlogPost;
-      await docClient.send(new put({
-        TableName: "portfolio-blog",
-        Item: updated
-      }));
-      return updated;
-    } catch (error) {
-      console.error("DynamoDB updateBlogPost error:", error);
-      throw error;
-    }
+    const existing = await this.getBlogPost(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...post } as BlogPost;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-blog",
+      Item: updated
+    }));
+    return updated;
   }
 
   async deleteBlogPost(id: number): Promise<boolean> {
     try {
       const existing = await this.getBlogPost(id);
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-blog",
         Key: { id: id.toString() }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteBlogPost error:", error);
-      throw error;
+      return false;
     }
   }
 
-  // Contact messages operations
   async getContactMessages(): Promise<ContactMessage[]> {
     try {
-      const result = await docClient.send(new scan({
+      const result = await docClient.send(new ScanCommand({
         TableName: "portfolio-messages"
       }));
       return (result.Items as ContactMessage[]) || [];
     } catch (error) {
       console.error("DynamoDB getContactMessages error:", error);
-      throw error;
+      return [];
     }
   }
 
   async getContactMessage(id: number): Promise<ContactMessage | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-messages",
         Key: { id: id.toString() }
       }));
       return result.Item as ContactMessage | undefined;
     } catch (error) {
       console.error("DynamoDB getContactMessage error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    try {
-      const id = Date.now().toString();
-      const newMessage = {
-        id,
-        ...message,
-        createdAt: new Date(),
-        read: false
-      } as ContactMessage;
-      await docClient.send(new put({
-        TableName: "portfolio-messages",
-        Item: newMessage
-      }));
-      return newMessage;
-    } catch (error) {
-      console.error("DynamoDB createContactMessage error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newMessage = {
+      id,
+      ...message,
+      createdAt: new Date(),
+      read: false
+    } as ContactMessage;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-messages",
+      Item: newMessage
+    }));
+    return newMessage;
   }
 
   async markMessageRead(id: number): Promise<boolean> {
     try {
       const existing = await this.getContactMessage(id);
       if (!existing) return false;
-      
       const updated = { ...existing, read: true } as ContactMessage;
-      await docClient.send(new put({
+      await docClient.send(new PutCommand({
         TableName: "portfolio-messages",
         Item: updated
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB markMessageRead error:", error);
-      throw error;
+      return false;
     }
   }
 
@@ -413,137 +354,116 @@ export class DynamoDBStorage implements IStorage {
     try {
       const existing = await this.getContactMessage(id);
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-messages",
         Key: { id: id.toString() }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteContactMessage error:", error);
-      throw error;
+      return false;
     }
   }
 
-  // Social links operations
   async getSocialLinks(): Promise<SocialLink[]> {
     try {
-      const result = await docClient.send(new scan({
+      const result = await docClient.send(new ScanCommand({
         TableName: "portfolio-social"
       }));
       return (result.Items as SocialLink[]) || [];
     } catch (error) {
       console.error("DynamoDB getSocialLinks error:", error);
-      throw error;
+      return [];
     }
   }
 
   async getSocialLink(id: number): Promise<SocialLink | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-social",
         Key: { id: id.toString() }
       }));
       return result.Item as SocialLink | undefined;
     } catch (error) {
       console.error("DynamoDB getSocialLink error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async createSocialLink(link: InsertSocialLink): Promise<SocialLink> {
-    try {
-      const id = Date.now().toString();
-      const newLink = { id, ...link } as SocialLink;
-      await docClient.send(new put({
-        TableName: "portfolio-social",
-        Item: newLink
-      }));
-      return newLink;
-    } catch (error) {
-      console.error("DynamoDB createSocialLink error:", error);
-      throw error;
-    }
+    const id = Date.now().toString();
+    const newLink = { id, ...link } as SocialLink;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-social",
+      Item: newLink
+    }));
+    return newLink;
   }
 
   async updateSocialLink(id: number, link: Partial<InsertSocialLink>): Promise<SocialLink | undefined> {
-    try {
-      const existing = await this.getSocialLink(id);
-      if (!existing) return undefined;
-      
-      const updated = { ...existing, ...link } as SocialLink;
-      await docClient.send(new put({
-        TableName: "portfolio-social",
-        Item: updated
-      }));
-      return updated;
-    } catch (error) {
-      console.error("DynamoDB updateSocialLink error:", error);
-      throw error;
-    }
+    const existing = await this.getSocialLink(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...link } as SocialLink;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-social",
+      Item: updated
+    }));
+    return updated;
   }
 
   async deleteSocialLink(id: number): Promise<boolean> {
     try {
       const existing = await this.getSocialLink(id);
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-social",
         Key: { id: id.toString() }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteSocialLink error:", error);
-      throw error;
+      return false;
     }
   }
 
-  // Resume operations
   async getResume(): Promise<Resume | undefined> {
     try {
-      const result = await docClient.send(new get({
+      const result = await docClient.send(new GetCommand({
         TableName: "portfolio-resume",
         Key: { id: "resume-1" }
       }));
       return result.Item as Resume | undefined;
     } catch (error) {
       console.error("DynamoDB getResume error:", error);
-      throw error;
+      return undefined;
     }
   }
 
   async upsertResume(data: InsertResume): Promise<Resume> {
-    try {
-      const resumeData = {
-        id: "resume-1",
-        ...data,
-        uploadedAt: new Date().toISOString()
-      } as Resume;
-      await docClient.send(new put({
-        TableName: "portfolio-resume",
-        Item: resumeData
-      }));
-      return resumeData;
-    } catch (error) {
-      console.error("DynamoDB upsertResume error:", error);
-      throw error;
-    }
+    const resumeData = {
+      id: "resume-1",
+      ...data,
+      uploadedAt: new Date().toISOString()
+    } as Resume;
+    await docClient.send(new PutCommand({
+      TableName: "portfolio-resume",
+      Item: resumeData
+    }));
+    return resumeData;
   }
 
   async deleteResume(): Promise<boolean> {
     try {
       const existing = await this.getResume();
       if (!existing) return false;
-      
-      await docClient.send(new deleteItem({
+      await docClient.send(new DeleteCommand({
         TableName: "portfolio-resume",
         Key: { id: "resume-1" }
       }));
       return true;
     } catch (error) {
       console.error("DynamoDB deleteResume error:", error);
-      throw error;
+      return false;
     }
   }
 }

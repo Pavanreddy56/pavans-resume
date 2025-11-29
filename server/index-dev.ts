@@ -12,13 +12,16 @@ import {
   insertSocialLinkSchema,
   insertHeroSchema,
 } from "@shared/schema";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const storage = new DynamoDBStorage();
 const JWT_SECRET = process.env.SESSION_SECRET || "portfolio-secret-key-dev";
+
+// Hardcoded admin credentials
+const ADMIN_USERNAME = "Pavan56";
+const ADMIN_PASSWORD = "Pavanreddy56@";
 
 app.use(express.json());
 
@@ -392,34 +395,16 @@ app.post("/api/admin/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password required" });
+    // Check hardcoded credentials
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      const token = jwt.sign({ id: "admin-1", username }, JWT_SECRET, {
+        expiresIn: "24h",
+      });
+      return res.json({ token });
     }
 
-    let admin = await storage.getAdminByUsername(username);
-
-    if (!admin) {
-      if (username === "Pavan56" && password === "Pavanreddy56@") {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        admin = await storage.createAdmin({
-          username: "Pavan56",
-          password: hashedPassword,
-        });
-      } else {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-    }
-
-    const isValid = await bcrypt.compare(password, admin.password);
-    if (!isValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET, {
-      expiresIn: "24h",
-    });
-
-    res.json({ token });
+    // Invalid credentials
+    return res.status(401).json({ message: "Invalid credentials" });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });

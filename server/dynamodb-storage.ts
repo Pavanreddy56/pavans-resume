@@ -1,7 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import type {
-  Admin, InsertAdmin, Hero, InsertHero, Skill, InsertSkill,
+  Hero, InsertHero, Skill, InsertSkill,
   Project, InsertProject, BlogPost, InsertBlogPost,
   ContactMessage, InsertContactMessage, SocialLink, InsertSocialLink,
   Resume, InsertResume
@@ -11,9 +11,6 @@ const client = new DynamoDBClient({ region: process.env.AWS_REGION || "us-east-1
 const docClient = DynamoDBDocumentClient.from(client);
 
 export interface IStorage {
-  getAdmin(id: number): Promise<Admin | undefined>;
-  getAdminByUsername(username: string): Promise<Admin | undefined>;
-  createAdmin(admin: InsertAdmin): Promise<Admin>;
   getHero(): Promise<Hero | undefined>;
   upsertHero(hero: InsertHero): Promise<Hero>;
   getSkills(): Promise<Skill[]>;
@@ -47,44 +44,6 @@ export interface IStorage {
 }
 
 export class DynamoDBStorage implements IStorage {
-  async getAdmin(id: number): Promise<Admin | undefined> {
-    try {
-      const result = await docClient.send(new GetCommand({
-        TableName: "portfolio-admins",
-        Key: { id: id.toString() }
-      }));
-      return result.Item as Admin | undefined;
-    } catch (error) {
-      console.error("DynamoDB getAdmin error:", error);
-      return undefined;
-    }
-  }
-
-  async getAdminByUsername(username: string): Promise<Admin | undefined> {
-    try {
-      const result = await docClient.send(new QueryCommand({
-        TableName: "portfolio-admins",
-        IndexName: "username-index",
-        KeyConditionExpression: "username = :username",
-        ExpressionAttributeValues: { ":username": username }
-      }));
-      return result.Items?.[0] as Admin | undefined;
-    } catch (error) {
-      console.error("DynamoDB getAdminByUsername error:", error);
-      return undefined;
-    }
-  }
-
-  async createAdmin(admin: InsertAdmin): Promise<Admin> {
-    const id = Date.now().toString();
-    const newAdmin = { id, ...admin } as Admin;
-    await docClient.send(new PutCommand({
-      TableName: "portfolio-admins",
-      Item: newAdmin
-    }));
-    return newAdmin;
-  }
-
   async getHero(): Promise<Hero | undefined> {
     try {
       const result = await docClient.send(new GetCommand({

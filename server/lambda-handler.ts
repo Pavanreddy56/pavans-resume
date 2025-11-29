@@ -8,11 +8,14 @@ import {
   insertSocialLinkSchema,
   insertHeroSchema,
 } from "@shared/schema";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const storage = new DynamoDBStorage();
 const JWT_SECRET = process.env.SESSION_SECRET || "portfolio-secret-key";
+
+// Hardcoded admin credentials
+const ADMIN_USERNAME = "Pavan56";
+const ADMIN_PASSWORD = "Pavanreddy56@";
 
 // CORS headers
 const CORS_HEADERS = {
@@ -89,48 +92,27 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 
     // Routes
-    // POST /admin/login
+    // POST /admin/login - Simple hardcoded login
     if (path === "/admin/login" && method === "POST") {
       const { username, password } = body;
-      if (!username || !password) {
+      
+      // Check hardcoded credentials
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        const token = jwt.sign({ id: "admin-1", username }, JWT_SECRET, {
+          expiresIn: "24h",
+        });
         return {
-          statusCode: 400,
+          statusCode: 200,
           headers: CORS_HEADERS,
-          body: JSON.stringify({ message: "Username and password required" }),
+          body: JSON.stringify({ token }),
         };
       }
-
-      let user = await storage.getAdminByUsername(username);
-      if (!user) {
-        if (username === "Pavan56" && password === "Pavanreddy56@") {
-          const hashedPassword = await bcrypt.hash(password, 10);
-          user = await storage.createAdmin({ username, password: hashedPassword });
-        } else {
-          return {
-            statusCode: 401,
-            headers: CORS_HEADERS,
-            body: JSON.stringify({ message: "Invalid credentials" }),
-          };
-        }
-      }
-
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
-        return {
-          statusCode: 401,
-          headers: CORS_HEADERS,
-          body: JSON.stringify({ message: "Invalid credentials" }),
-        };
-      }
-
-      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
-        expiresIn: "24h",
-      });
-
+      
+      // Invalid credentials
       return {
-        statusCode: 200,
+        statusCode: 401,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ message: "Invalid credentials" }),
       };
     }
 

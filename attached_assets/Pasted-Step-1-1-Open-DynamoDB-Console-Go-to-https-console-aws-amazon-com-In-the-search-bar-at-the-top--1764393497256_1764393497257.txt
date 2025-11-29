@@ -1,0 +1,98 @@
+Step 1.1: Open DynamoDB Console
+Go to https://console.aws.amazon.com
+In the search bar at the top, type DynamoDB
+Click on DynamoDB (from the search results)
+Click Create table button
+Step 1.2: Create Table 1 - portfolio-admins
+Fill in these details:
+
+Field	Value
+Table name	portfolio-admins
+Partition key	username (String)
+Billing mode	Pay-per-request
+Then click Create table
+
+Add admin user:
+
+Once table is created, click on the table name portfolio-admins
+Click Explore items button
+Click Create item button
+Click the JSON tab (top right)
+Paste this JSON:
+{
+  "username": {"S": "Pavan56"},
+  "password": {"S": "$2b$10$3tEzLj5H7tF8jK9mL2pP5eQ6rS7tU8vW9xY0zA1bC2dE3fG4hI5jJ"},
+  "id": {"S": "1"}
+}
+Click Create item
+Step 1.3: Create Table 2 - portfolio-hero
+Go back to DynamoDB main page (click Tables in the left sidebar)
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-hero
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Add hero data:
+
+Click on portfolio-hero table
+Click Explore items → Create item
+Click JSON tab and paste:
+{
+  "id": {"S": "hero-1"},
+  "title": {"S": "DevOps Engineer"},
+  "subtitle": {"S": "Building scalable infrastructure"},
+  "bio": {"S": "Experienced in AWS, Docker, Kubernetes"},
+  "profileImageUrl": {"S": "https://example.com/image.jpg"}
+}
+Click Create item
+Step 1.4: Create Table 3 - portfolio-skills
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-skills
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Step 1.5: Create Table 4 - portfolio-projects
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-projects
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Step 1.6: Create Table 5 - portfolio-blog
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-blog
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Step 1.7: Create Table 6 - portfolio-messages
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-messages
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Step 1.8: Create Table 7 - portfolio-social
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-social
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Step 1.9: Create Table 8 - portfolio-resume
+Click Create table button
+Fill in:
+Field	Value
+Table name	portfolio-resume
+Partition key	id (String)
+Billing mode	Pay-per-request
+Click Create table
+Verify all 8 tables exist: Go to Tables in the left sidebar. You should see all 8 tables listed.

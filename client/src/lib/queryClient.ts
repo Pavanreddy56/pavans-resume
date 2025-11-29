@@ -1,6 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-const API_URL = "https://9ezqmmm8f5.execute-api.ap-south-1.amazonaws.com/prod";
+// For localhost development, use relative paths
+// For AWS deployment, update this to your Lambda API URL
+const API_URL = "";
 
 function getAuthToken(): string | null {
   return localStorage.getItem("admin_token");

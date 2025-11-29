@@ -1,0 +1,35 @@
+I'm diagnosing the following console error:
+
+Executing function: failed (logs ) Details{ "errorType": "Runtime.ImportModuleError", "errorMessage": "Error: Cannot find module 'lambda-handler'\nRequire stack:\n- /var/runtime/index.mjs", "trace": [ "Runtime.ImportModuleError: Error: Cannot find module 'lambda-handler'", "Require stack:", "- /var/runtime/index.mjs", " at loadModule (file:///var/runtime/index.mjs:577:13)", " at async UserFunctionLoader.load (file:///var/runtime/index.mjs:508:20)", " at async createRuntime (file:///var/runtime/index.mjs:1221:52)", " at async ignition (file:///var/runtime/index.mjs:1637:21)" ] }SummaryCode SHA-256Qs3WszX7HbxqAOYkGY/cjjEVatB8U3x/WENQonvwlSE=Execution time20 minutes agoFunction version$LATESTRequest IDcdcc1351-e1f4-430f-bb45-95220f26e126Duration104.27 msBilled duration105 msResources configured128 MBMax memory used82 MBLog outputThe area below shows the last 4 KB of the execution log. Click here  to view the corresponding CloudWatch log group.2025-11-29T04:07:42.665Z - ERROR Init Error {"errorType":"Runtime.ImportModuleError","errorMessage":"Error: Cannot find module 'lambda-handler'\nRequire stack:\n- /var/runtime/index.mjs","name":"Runtime.ImportModuleError","stack":["Runtime.ImportModuleError: Error: Cannot find module 'lambda-handler'","Require stack:","- /var/runtime/index.mjs"," at loadModule (file:///var/runtime/index.mjs:577:13)"," at async UserFunctionLoader.load (file:///var/runtime/index.mjs:508:20)"," at async createRuntime (file:///var/runtime/index.mjs:1221:52)"," at async ignition (file:///var/runtime/index.mjs:1637:21)"]} node:internal/process/promises:394 triggerUncaughtException(err, true /* fromPromise */); ^ ImportModuleError [Runtime.ImportModuleError]: Error: Cannot find module 'lambda-handler' Require stack: - /var/runtime/index.mjs at loadModule (file:///var/runtime/index.mjs:577:13) at async UserFunctionLoader.load (file:///var/runtime/index.mjs:508:20) at async createRuntime (file:///var/runtime/index.mjs:1221:52) at async ignition (file:///var/runtime/index.mjs:1637:21) Node.js v24.11.0 INIT_REPORT Init Duration: 89.29 ms Phase: invoke Status: error Error Type: Runtime.ImportModuleError START RequestId: cdcc1351-e1f4-430f-bb45-95220f26e126 Version: $LATEST END RequestId: cdcc1351-e1f4-430f-bb45-95220f26e126 REPORT RequestId: cdcc1351-e1f4-430f-bb45-95220f26e126 Duration: 104.27 ms Billed Duration: 105 ms Memory Size: 128 MB Max Memory Used: 82 MB Status: error Error Type: Runtime.ImportModuleError
+Expand
+Analysis
+The error message indicates that the AWS Lambda function is unable to find the 'lambda-handler' module, which is required for the function to execute. This suggests that the function code is missing or incorrectly configured, preventing the runtime from loading the necessary module.
+Resolution
+Try the following steps to resolve your error:
+
+
+Navigate to the Lambda function 'portfolio-api' in the AWS Console
+
+Select the 'Code' tab in the function overview
+
+Review the function code and ensure that the file named 'lambda-handler.js' exists in the root directory of your function
+
+If 'lambda-handler.js' is not present:
+
+Create a new file named 'lambda-handler.js'
+Implement your Lambda function code in this file, including the 'handler' function
+If 'lambda-handler.js' is present:
+
+Verify that the file contains the 'handler' function
+Ensure the 'handler' function is exported correctly
+In the function configuration, check the 'Runtime settings':
+
+Verify that the 'Handler' field is set to 'lambda-handler.handler'
+If the 'Handler' setting is incorrect:
+
+Click 'Edit' in the 'Runtime settings' section
+Update the 'Handler' field to 'lambda-handler.handler'
+Save the changes
+Deploy the updated function code by clicking 'Deploy' in the 'Code' tab
+
+Test the function again to verify that the error has been resolved

@@ -33,7 +33,7 @@ Database (DynamoDB)
 
 **Time: 5 minutes**
 
-You already created the 8 DynamoDB tables. Let's verify they exist:
+You already created the 7 DynamoDB tables. Let's verify they exist:
 
 ## Step 1.1: Check DynamoDB Tables
 
@@ -41,8 +41,7 @@ You already created the 8 DynamoDB tables. Let's verify they exist:
 2. Search for **DynamoDB** in the search bar
 3. Click **DynamoDB** from results
 4. Click **Tables** in the left sidebar
-5. You should see these 8 tables:
-   - ✅ `portfolio-admins`
+5. You should see these 7 tables:
    - ✅ `portfolio-hero`
    - ✅ `portfolio-skills`
    - ✅ `portfolio-projects`
@@ -50,6 +49,8 @@ You already created the 8 DynamoDB tables. Let's verify they exist:
    - ✅ `portfolio-messages`
    - ✅ `portfolio-social`
    - ✅ `portfolio-resume`
+
+**Note**: We removed `portfolio-admins` table since login is now hardcoded. If you created it earlier, you can leave it (unused) or delete it.
 
 ✅ All tables exist? Move to **PHASE 2**
 
@@ -294,33 +295,20 @@ Your frontend needs to know where to send API requests. We already updated this,
    - **Username**: `Pavan56`
    - **Password**: `Pavanreddy56@`
 
-## Step 6.2: Test API Endpoints
+✅ Login successful? You're accessing the real API!
 
-If login works, all APIs work! But to manually test:
+## Step 6.2: Expected Behavior After Login
 
-1. Open your browser's **Developer Console** (F12)
-2. Go to **Console** tab
-3. Paste and run this command:
+Once logged in, you should see the **Admin Dashboard** with options to:
+- Edit hero section
+- Manage skills (add/edit/delete)
+- Manage projects (add/edit/delete)
+- Write blog posts (add/edit/delete)
+- Add social links (add/edit/delete)
+- View contact messages
+- Upload resume
 
-```javascript
-fetch('https://YOUR-API-URL/api/hero', {
-  headers: { 'Authorization': 'Bearer YOUR-JWT-TOKEN' }
-}).then(r => r.json()).then(d => console.log(d))
-```
-
-Replace:
-- `YOUR-API-URL` with your API Gateway URL from Phase 3.7
-- `YOUR-JWT-TOKEN` with the token you got after login
-
-You should see hero data returned!
-
-## Step 6.3: Verify All Tables
-
-1. Go to DynamoDB in AWS Console
-2. Click **Tables**
-3. Click on `portfolio-admins` table
-4. Click **Explore items**
-5. You should see the admin user created after first login
+All changes are automatically saved to your DynamoDB tables!
 
 ✅ Everything working? Your deployment is complete!
 
@@ -367,12 +355,12 @@ All content is automatically saved to DynamoDB!
 2. Make sure the first part matches your actual API Gateway URL
 3. Rebuild and re-upload to S3
 
-## Problem: Login succeeds but dashboard is empty
+## Problem: Login fails with "Invalid credentials"
 
 **Solution**:
-1. Go to DynamoDB → Tables
-2. Check if the table exists and has the correct name
-3. Lambda might not have created the admin user - try logging in again
+1. Make sure you're using exactly: `Pavan56` and `Pavanreddy56@`
+2. Check for typos in username/password
+3. The login is case-sensitive
 
 ## Problem: Can't upload files to S3
 
@@ -398,14 +386,16 @@ All content is automatically saved to DynamoDB!
 
 ---
 
-# Admin Credentials
+# Admin Login Credentials
 
 Your admin login credentials are:
 
 - **Username**: `Pavan56`
 - **Password**: `Pavanreddy56@`
 
-⚠️ **Change these after first login** (when admin panel is fully working)
+⚠️ **Note**: These are hardcoded in the Lambda function. To change them later, edit the Lambda code and update:
+- `ADMIN_USERNAME = "Pavan56"`
+- `ADMIN_PASSWORD = "Pavanreddy56@"`
 
 ---
 
@@ -440,9 +430,9 @@ Save these for reference:
 
 - [ ] You can visit your website (S3 URL) and see your portfolio
 - [ ] "Admin Login" button appears on the website
-- [ ] You can login with your credentials
+- [ ] You can login with `Pavan56` / `Pavanreddy56@`
 - [ ] Admin dashboard loads with options to manage content
-- [ ] You can add a test skill and it appears
+- [ ] You can add a test skill and it appears in the list
 - [ ] Contact form submissions are saved to DynamoDB
 
 ---

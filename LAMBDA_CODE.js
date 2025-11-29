@@ -1,6 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, UpdateCommand, DeleteCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import bcrypt from "bcrypt";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, DeleteCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 
@@ -8,6 +7,10 @@ const dynamodb = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(dynamodb);
 
 const JWT_SECRET = process.env.SESSION_SECRET || "portfolio-secret-key";
+
+// Hardcoded admin credentials
+const ADMIN_USERNAME = "Pavan56";
+const ADMIN_PASSWORD = "Pavanreddy56@";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,37 +27,7 @@ function parseJWT(token) {
   }
 }
 
-// DynamoDB Operations
-async function getAdminByUsername(username) {
-  try {
-    const result = await docClient.send(new QueryCommand({
-      TableName: "portfolio-admins",
-      IndexName: "username-index",
-      KeyConditionExpression: "username = :username",
-      ExpressionAttributeValues: { ":username": username }
-    }));
-    return result.Items?.[0] || null;
-  } catch (error) {
-    console.error("Error getting admin:", error);
-    return null;
-  }
-}
-
-async function createAdmin(data) {
-  try {
-    const id = uuid();
-    const item = { id, ...data };
-    await docClient.send(new PutCommand({
-      TableName: "portfolio-admins",
-      Item: item
-    }));
-    return item;
-  } catch (error) {
-    console.error("Error creating admin:", error);
-    return null;
-  }
-}
-
+// DynamoDB Operations for Hero
 async function getHero() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -83,6 +56,7 @@ async function upsertHero(data) {
   }
 }
 
+// DynamoDB Operations for Skills
 async function getSkills() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -146,6 +120,7 @@ async function deleteSkill(id) {
   }
 }
 
+// DynamoDB Operations for Projects
 async function getProjects() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -209,6 +184,7 @@ async function deleteProject(id) {
   }
 }
 
+// DynamoDB Operations for Blog
 async function getBlogPosts() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -272,6 +248,7 @@ async function deleteBlogPost(id) {
   }
 }
 
+// DynamoDB Operations for Social Links
 async function getSocialLinks() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -335,6 +312,7 @@ async function deleteSocialLink(id) {
   }
 }
 
+// DynamoDB Operations for Contact Messages
 async function getContactMessages() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -398,6 +376,7 @@ async function deleteContactMessage(id) {
   }
 }
 
+// DynamoDB Operations for Resume
 async function getResume() {
   try {
     const result = await docClient.send(new ScanCommand({
@@ -479,41 +458,27 @@ export async function handler(event) {
       }
     }
 
-    // POST /admin/login
+    // POST /admin/login - Simple hardcoded login
     if (path === "/admin/login" && method === "POST") {
       const { username, password } = body;
       
-      let user = await getAdminByUsername(username);
-      if (!user) {
-        if (username === "Pavan56" && password === "Pavanreddy56@") {
-          const hashedPassword = await bcrypt.hash(password, 10);
-          user = await createAdmin({ username, password: hashedPassword });
-        } else {
-          return {
-            statusCode: 401,
-            headers: CORS_HEADERS,
-            body: JSON.stringify({ message: "Invalid credentials" }),
-          };
-        }
-      }
-
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
+      // Check hardcoded credentials
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        const token = jwt.sign({ id: "admin-1", username }, JWT_SECRET, {
+          expiresIn: "24h",
+        });
         return {
-          statusCode: 401,
+          statusCode: 200,
           headers: CORS_HEADERS,
-          body: JSON.stringify({ message: "Invalid credentials" }),
+          body: JSON.stringify({ token }),
         };
       }
-
-      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
-        expiresIn: "24h",
-      });
-
+      
+      // Invalid credentials
       return {
-        statusCode: 200,
+        statusCode: 401,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ message: "Invalid credentials" }),
       };
     }
 

@@ -1,5 +1,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+const API_URL = "https://9ezqmmm8f5.execute-api.ap-south-1.amazonaws.com/prod";
+
 function getAuthToken(): string | null {
   return localStorage.getItem("admin_token");
 }
@@ -32,7 +34,7 @@ export async function apiRequest<T = unknown>(
     headers["Content-Type"] = "application/json";
   }
 
-  const res = await fetch(url, {
+  const res = await fetch(`${API_URL}${url}`, {
     method,
     headers,
     body: data ? JSON.stringify(data) : undefined,
@@ -51,7 +53,7 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
     
-    const res = await fetch(url, {
+    const res = await fetch(`${API_URL}${url}`, {
       credentials: "include",
       headers: getAuthHeaders(),
     });

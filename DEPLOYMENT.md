@@ -1,665 +1,468 @@
-# Portfolio Website - AWS Console Deployment Guide
+# AWS Serverless Portfolio Deployment Guide
 
-Complete step-by-step guide to deploy your DevOps portfolio using **AWS Console UI** (web browser, no CLI needed).
+**Complete step-by-step instructions to deploy your DevOps portfolio on AWS**
+
+> **Time Required**: ~2 hours | **Cost**: ~$5-15/month | **No coding knowledge needed**
+
+---
+
+## Architecture Overview
+
+```
+Your Website (S3)
+    ↓
+API Requests (API Gateway)
+    ↓
+Backend Logic (Lambda)
+    ↓
+Database (DynamoDB)
+```
+
+---
 
 ## Prerequisites
 
-- AWS Account: https://aws.amazon.com
-- Your project files (already built and ready)
-- Browser (Chrome, Firefox, Safari, Edge)
-
-## Deployment Architecture
-
-```
-┌─────────────────────┐
-│   Frontend (S3)     │  ← You visit this URL
-└──────────┬──────────┘
-           │ CloudFront (CDN)
-           ↓
-┌─────────────────────┐
-│   API Gateway       │  ← Your app makes API calls
-└──────────┬──────────┘
-           │
-           ↓
-┌─────────────────────┐
-│   Lambda Functions  │  ← Handles requests
-└──────────┬──────────┘
-           │
-           ↓
-┌─────────────────────┐
-│    DynamoDB         │  ← Stores all data
-└─────────────────────┘
-```
-
-**Cost**: ~$5-15/month with pay-per-request pricing
+✅ AWS Account created (https://aws.amazon.com)
+✅ Built frontend files ready (`dist/public/` folder)
+✅ Lambda code prepared (`LAMBDA_CODE.js`)
+✅ All DynamoDB tables created
 
 ---
 
-## Phase 1: Create DynamoDB Tables (10 minutes)
+# PHASE 1: Verify DynamoDB Tables
 
-DynamoDB is where all your portfolio data lives.
+**Time: 5 minutes**
 
-### Step 1.1: Open DynamoDB Console
+You already created the 8 DynamoDB tables. Let's verify they exist:
 
-1. Go to https://console.aws.amazon.com
-2. In the search bar at the top, type **DynamoDB**
-3. Click on **DynamoDB** (from the search results)
-4. Click **Create table** button
+## Step 1.1: Check DynamoDB Tables
 
-### Step 1.2: Create Table 1 - `portfolio-admins`
+1. Open AWS Console: https://console.aws.amazon.com
+2. Search for **DynamoDB** in the search bar
+3. Click **DynamoDB** from results
+4. Click **Tables** in the left sidebar
+5. You should see these 8 tables:
+   - ✅ `portfolio-admins`
+   - ✅ `portfolio-hero`
+   - ✅ `portfolio-skills`
+   - ✅ `portfolio-projects`
+   - ✅ `portfolio-blog`
+   - ✅ `portfolio-messages`
+   - ✅ `portfolio-social`
+   - ✅ `portfolio-resume`
 
-Fill in these details:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-admins` |
-| **Partition key** | `username` (String) |
-| **Billing mode** | Pay-per-request |
-
-Then click **Create table**
-
-**Add admin user:**
-1. Once table is created, click on the table name `portfolio-admins`
-2. Click **Explore items** button
-3. Click **Create item** button
-4. Click the **JSON** tab (top right)
-5. Paste this JSON:
-
-```json
-{
-  "username": {"S": "Pavan56"},
-  "password": {"S": "$2b$10$3tEzLj5H7tF8jK9mL2pP5eQ6rS7tU8vW9xY0zA1bC2dE3fG4hI5jJ"},
-  "id": {"S": "1"}
-}
-```
-
-6. Click **Create item**
-
-### Step 1.3: Create Table 2 - `portfolio-hero`
-
-1. Go back to DynamoDB main page (click **Tables** in the left sidebar)
-2. Click **Create table** button
-3. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-hero` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-4. Click **Create table**
-
-**Add hero data:**
-1. Click on `portfolio-hero` table
-2. Click **Explore items** → **Create item**
-3. Click **JSON** tab and paste:
-
-```json
-{
-  "id": {"S": "hero-1"},
-  "title": {"S": "DevOps Engineer"},
-  "subtitle": {"S": "Building scalable infrastructure"},
-  "bio": {"S": "Experienced in AWS, Docker, Kubernetes"},
-  "profileImageUrl": {"S": "https://example.com/image.jpg"}
-}
-```
-
-4. Click **Create item**
-
-### Step 1.4: Create Table 3 - `portfolio-skills`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-skills` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-### Step 1.5: Create Table 4 - `portfolio-projects`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-projects` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-### Step 1.6: Create Table 5 - `portfolio-blog`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-blog` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-### Step 1.7: Create Table 6 - `portfolio-messages`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-messages` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-### Step 1.8: Create Table 7 - `portfolio-social`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-social` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-### Step 1.9: Create Table 8 - `portfolio-resume`
-
-1. Click **Create table** button
-2. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **Table name** | `portfolio-resume` |
-| **Partition key** | `id` (String) |
-| **Billing mode** | Pay-per-request |
-
-3. Click **Create table**
-
-**Verify all 8 tables exist:**
-Go to **Tables** in the left sidebar. You should see all 8 tables listed.
+✅ All tables exist? Move to **PHASE 2**
 
 ---
 
-## Phase 2: Create Lambda Function (15 minutes)
+# PHASE 2: Create and Deploy Lambda Function
 
-Lambda will run your API code.
+**Time: 15 minutes**
 
-### Step 2.1: Create IAM Role (for Lambda permissions)
+## Step 2.1: Create Lambda Function
 
-1. Go to https://console.aws.amazon.com
-2. Search for **IAM**
-3. Click on **IAM**
-4. In the left sidebar, click **Roles**
-5. Click **Create role** button
-6. Select **AWS service** as the trusted entity type
-7. Under "Use case", select **Lambda**
-8. Click **Next** button
-9. On "Add permissions" page:
-   - Search for **AmazonDynamoDBFullAccess**
-   - Check the checkbox next to it
-   - Click **Next**
-10. On "Name, review, and create":
-    - **Role name**: `portfolio-lambda-role`
-    - Click **Create role**
+1. Search for **Lambda** in AWS Console
+2. Click **Lambda** from results
+3. Click **Create function** button (orange button, top right)
+4. Fill in:
+   - **Function name**: `portfolio-api`
+   - **Runtime**: Node.js 20.x
+   - **Architecture**: x86_64
+   - Leave everything else as default
+5. Click **Create function** button
 
-### Step 2.2: Build Your Frontend
+## Step 2.2: Add Lambda Code
 
-The frontend is already built in your Replit environment! Just download it:
+1. You'll see a code editor below titled "Code source"
+2. You'll see a file `index.mjs` in the tabs above the editor
+3. **Click on `index.mjs`** to select it
+4. **Select all the code** (Ctrl+A on Windows, Cmd+A on Mac)
+5. **Delete it**
+6. **Copy the entire code from `LAMBDA_CODE.js`** file in your project
+7. **Paste it** into the Lambda console editor
+8. Click **Deploy** button
 
-**Option A (Easiest):**
-1. Go to your Replit project: https://replit.com/
-2. Click on your project
-3. Look for the `dist/public/` folder in the file explorer (left sidebar)
-4. Download this folder to your computer
+## Step 2.3: Configure Handler
 
-**Option B (Build Locally on Mac/Linux):**
-If you're on Mac or Linux, you can build locally:
-```bash
-npm install
-npm run build
-```
-This creates a `dist/public/` folder with all your frontend files.
-
-**Note:** On Windows, the build command fails due to Replit-specific plugins. Just download the pre-built files from Replit instead (Option A).
-
-### Step 2.3: Create Lambda Function
-
-1. Go to https://console.aws.amazon.com
-2. Search for **Lambda**
-3. Click on **Lambda**
-4. Click **Create function** button
-5. Fill in these details:
-
-| Field | Value |
-|-------|-------|
-| **Function name** | `portfolio-api` |
-| **Runtime** | Node.js 18.x |
-| **Architecture** | x86_64 |
-| **Execution role** | `portfolio-lambda-role` (select from dropdown) |
-
-6. Click **Create function** button
-
-### Step 2.4: Upload Lambda Code
-
-1. On the Lambda function page, scroll down to **Code source** section
-2. Click **Upload from** dropdown → **ZIP file**
-3. You need to create a ZIP file with your code:
-
-**On your computer:**
-1. Create a folder called `lambda-deploy`
-2. Copy these folders into it:
-   - `server/` folder
-   - `shared/` folder
-   - `package.json` file
-   - `package-lock.json` file
-3. Create a ZIP file containing all these
-4. Upload this ZIP file
-
-5. In the Lambda console, click **Upload**
-6. Select your ZIP file and click **Open**
-7. Click **Save** button
-
-### Step 2.5: Set Handler Path
-
-1. In the Lambda function page, scroll to the top
-2. Find **Handler** field (currently shows something like `index.handler`)
-3. Change it to: `server/lambda-handler.handler`
+1. Scroll down to find **Runtime settings** section
+2. Click **Edit** button
+3. Change **Handler** field to: `index.handler`
 4. Click **Save** button
 
-### Step 2.6: Set Environment Variables
+## Step 2.4: Add Environment Variable (JWT Secret)
 
-1. In the Lambda function page, scroll down to **Environment variables** section
-2. Click **Edit**
+1. In the same Lambda function page, scroll down to **Environment variables** section
+2. Click **Edit** button
 3. Click **Add environment variable**
-4. Add only this one:
-
-| Key | Value |
-|-----|-------|
-| `SESSION_SECRET` | `your-random-secret-here` |
-
-(Replace `your-random-secret-here` with any random string, like: `my-portfolio-secret-key-2024`)
-
+4. Add:
+   - **Key**: `SESSION_SECRET`
+   - **Value**: `portfolio-secret-key`
 5. Click **Save** button
 
-**Note:** `AWS_REGION` is automatically set by Lambda to `us-east-1` - you don't need to add it manually. AWS doesn't allow users to modify this reserved key.
+## Step 2.5: Increase Timeout
 
----
-
-## Phase 3: Create API Gateway (15 minutes)
-
-API Gateway connects your frontend to Lambda.
-
-### Step 3.1: Create API Gateway
-
-**⚠️ CRITICAL: Make sure you are in the `ap-south-1` region!**
-
-1. Go to https://console.aws.amazon.com
-2. **Check the region in the top right corner - it should say `ap-south-1`**
-3. Search for **API Gateway**
-4. Click on **API Gateway**
-5. Click **Create API** button
-6. Under "REST API", click **Build** button
-7. Fill in:
-
-| Field | Value |
-|-------|-------|
-| **API name** | `portfolio-api` |
-| **Description** | Portfolio API Gateway |
-| **Endpoint type** | Regional |
-
-8. Click **Create API** button
-
-**⚠️ Your URL will look like:**
-```
-https://xxxxxx.execute-api.ap-south-1.amazonaws.com/prod
-```
-
-### Step 3.2: Create Resources and Methods
-
-1. You should see the API with a resource tree on the left
-2. Click on the `/` (root) resource
-3. Click **Create resource** button
-4. Resource name: `api`
-5. Click **Create resource**
-
-6. Now select the `/api` resource you just created
-7. Click **Create resource** button
-8. Resource name: `{proxy+}` (this allows catch-all routing)
-9. Check "Capture all resource paths"
-10. Click **Create resource**
-
-### Step 3.3: Add HTTP Methods
-
-1. Select the `/{proxy+}` resource
-2. Click **Create method**
-3. Select **GET**
-4. Click **Create method**
-
-Repeat for: **POST**, **PUT**, **DELETE** (one by one)
-
-### Step 3.4: Connect Methods to Lambda
-
-For each method (GET, POST, PUT, DELETE):
-
-1. Click on the method name
-2. Under "Integration type", select **Lambda Function**
-3. In the **Lambda Function** field, type: `portfolio-api`
+1. Scroll down to **General configuration**
+2. Click **Edit** button
+3. Change **Timeout** to: `30` seconds (from 3)
 4. Click **Save** button
-5. Click **OK** when prompted to add permission
 
-### Step 3.5: Enable CORS
-
-1. Select the `/{proxy+}` resource
-2. Click **Enable CORS**
-3. Click **Enable CORS and replace existing CORS headers** button
-4. Click **Yes, replace existing values** button
-
-### Step 3.6: Deploy API
-
-1. Click **Deploy API** button
-2. **Stage**: Create a new stage called `prod`
-3. Click **Deploy** button
-4. You should see your **Invoke URL** - this is your API endpoint!
-
-**Save this URL** - you'll need it for the frontend.
-
-Example: `https://abc123.execute-api.ap-south-1.amazonaws.com/prod`
+✅ Lambda function created and configured? Move to **PHASE 3**
 
 ---
 
-## Phase 4: Upload Frontend to S3 (10 minutes)
+# PHASE 3: Create API Gateway
 
-S3 will host your website files.
+**Time: 20 minutes**
 
-### Step 4.1: Create S3 Bucket
+## Step 3.1: Create API Gateway
 
-1. Go to https://console.aws.amazon.com
-2. Search for **S3**
-3. Click on **S3**
-4. Click **Create bucket** button
-5. **Bucket name**: `my-portfolio-site-pavan-2024` (must be globally unique - add a date/number if needed)
-6. **Region**: **ap-south-1** (IMPORTANT: Keep this same region as your other services)
-7. Leave all other settings default
+1. Search for **API Gateway** in AWS Console
+2. Click **API Gateway** from results
+3. Click **Create API** button
+4. Select **REST API** (the first option)
+5. Click **Build** button
+
+## Step 3.2: Configure API Gateway
+
+1. **API name**: `portfolio-api`
+2. **Description**: Portfolio API for AWS
+3. **Endpoint type**: Regional
+4. Click **Create API** button
+
+## Step 3.3: Create Resource
+
+1. You'll see the API editor page
+2. On the left, click **Resources**
+3. Click on **/** (root resource)
+4. Click **Create resource** button
+5. **Resource name**: `api`
+6. Click **Create resource** button
+7. Now click on the new `/api` resource
+8. Click **Create resource** button again
+9. **Resource name**: `{proxy+}`
+10. ✅ Check the box **Enable API Gateway CORS**
+11. Click **Create resource** button
+
+## Step 3.4: Create Method
+
+1. Click on **/{proxy+}** resource
+2. Click **Create method** button
+3. Select **ANY** from dropdown
+4. Click **Create method** button
+5. Fill in the form:
+   - **Integration type**: Lambda Function
+   - **Lambda Function**: `portfolio-api` (search and select it)
+   - ✅ Check "Use Lambda Proxy Integration"
+6. Click **Create method** button
+
+## Step 3.5: Configure Root Path
+
+1. Click on the **/** (root) resource in the left panel
+2. Click **Create method** button
+3. Select **ANY**
+4. Click **Create method**
+5. Fill in:
+   - **Integration type**: Lambda Function
+   - **Lambda Function**: `portfolio-api`
+   - ✅ Check "Use Lambda Proxy Integration"
+6. Click **Create method**
+
+## Step 3.6: Deploy API
+
+1. Click **Deploy API** button (top, orange)
+2. **Stage**: Create new stage
+3. **Stage name**: `prod`
+4. Click **Deploy** button
+
+## Step 3.7: Get Your API URL
+
+1. Click on **Stages** in left panel
+2. Click on **prod** stage
+3. Copy the **Invoke URL** (looks like: `https://xxxxxxx.execute-api.ap-south-1.amazonaws.com/prod`)
+4. **Save this URL** - you'll need it later
+
+✅ API Gateway created and deployed? Move to **PHASE 4**
+
+---
+
+# PHASE 4: Create S3 Bucket for Frontend
+
+**Time: 20 minutes**
+
+## Step 4.1: Create S3 Bucket
+
+1. Search for **S3** in AWS Console
+2. Click **S3** from results
+3. Click **Create bucket** button (orange)
+4. **Bucket name**: `my-portfolio-site-pavan-2024` (must be globally unique)
+5. **Region**: `ap-south-1`
+6. ✅ Uncheck "Block all public access"
+7. Click checkbox to confirm you understand public access
 8. Click **Create bucket** button
 
-### Step 4.2: Upload Frontend Files
-
-Your frontend files are in the `dist/public/` folder (from your Replit build).
+## Step 4.2: Upload Frontend Files
 
 1. Click on your bucket name to open it
 2. Click **Upload** button
-3. Click **Add files**
-4. Navigate to your **`dist/public/`** folder (NOT `client/dist/`)
-5. Open the `dist/public/` folder
-6. Select **all files and folders inside it** (index.html, assets/, etc.)
-7. Make sure you upload the **contents**, not the folder itself
-8. Click **Open**
-9. Scroll down and click **Upload** button
+3. Click **Add files** and select **all files from your `dist/public/` folder**:
+   - `index.html`
+   - `assets/` folder
+   - Any images
+4. Click **Upload** button
+5. Wait for upload to complete (you'll see green checkmarks)
 
-**Important:** You should see these files uploaded:
-- `index.html`
-- `assets/` (folder with CSS and JS files)
-- Any image files
+## Step 4.3: Enable Static Website Hosting
 
-Wait for upload to complete.
-
-### Step 4.3: Enable Static Website Hosting
-
-1. Click on your bucket name
+1. Click on the bucket name
 2. Click **Properties** tab
 3. Scroll down to **Static website hosting**
-4. Click **Edit**
+4. Click **Edit** button
 5. Select **Enable**
 6. **Index document**: `index.html`
-7. **Error document**: `index.html`
-8. Click **Save changes**
+7. **Error document**: `index.html` (so all routes load the app)
+8. Click **Save changes** button
 
-### Step 4.4: Make Bucket Public
+## Step 4.4: Make Bucket Public
 
-1. Click on your bucket name
-2. Click **Permissions** tab
-3. Scroll to **Block public access (bucket settings)**
-4. Click **Edit**
-5. Uncheck "Block all public access"
-6. Click **Save changes**
-7. Type `confirm` in the confirmation box
-8. Click **Confirm**
-
-### Step 4.5: Add Bucket Policy
-
-1. Still in **Permissions** tab
+1. Click on **Permissions** tab
 2. Scroll to **Bucket policy**
-3. Click **Edit**
-4. Paste this policy (replace `my-portfolio-site-pavan` with your bucket name):
+3. Click **Edit** button
+4. Copy and paste this policy (replace `your-bucket-name` with your actual bucket name):
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicRead",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::my-portfolio-site-pavan/*"
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::your-bucket-name/*"
+        }
+    ]
 }
 ```
 
-5. Click **Save changes**
+5. Click **Save** button
 
-### Step 4.6: Get Your Website URL
+## Step 4.5: Get Your Website URL
 
-1. Click on your bucket name
-2. Click **Properties** tab
-3. Scroll to **Static website hosting**
-4. Under "Bucket website endpoint", you'll see your URL
+1. Go to **Properties** tab
+2. Scroll down to **Static website hosting**
+3. Copy the **Bucket website endpoint** (looks like: `http://my-portfolio-site-pavan-2024.s3-website-ap-south-1.amazonaws.com`)
+4. **Save this URL** - this is your live website!
 
-**Example (CORRECT):** `http://my-portfolio-site-pavan-2024.s3-website-us-east-1.amazonaws.com`
-
-**DO NOT use:** `http://my-portfolio-site-pavan.s3-website.ap-south-1.amazonaws.com` (wrong region)
-
-**Troubleshooting:**
-- If you see a blank page or 404, check:
-  - Region is `us-east-1` (not ap-south-1 or other region)
-  - You uploaded files to the **root** of the bucket (not in a subfolder)
-  - `index.html` is in the bucket root
-  - Bucket policy is correctly applied (from Step 4.5)
-  - Static website hosting is enabled (from Step 4.3)
-
-**Save this URL** - this is your live website!
+✅ S3 bucket created and website hosting enabled? Move to **PHASE 5**
 
 ---
 
-## Phase 5: Connect Frontend to API (5 minutes)
+# PHASE 5: Connect Frontend to Backend
 
-Your frontend needs to know where your API is.
+**Time: 10 minutes**
 
-### Step 5.1: Update Frontend Code
+Your frontend needs to know where to send API requests. We already updated this, but verify:
 
 1. In your project, open `client/src/lib/queryClient.ts`
-2. Find the line that sets the API URL
-3. Change it to your API Gateway URL from Phase 3.6
+2. Look for line with: `const API_URL = "https://9ezqmmm8f5.execute-api.ap-south-1.amazonaws.com/prod"`
+3. Replace `9ezqmmm8f5` with the first part of YOUR API Gateway URL from Phase 3.7
+4. Save the file
+5. Rebuild the frontend: Run `npm run build` in your terminal
+6. Wait for build to complete
 
-It should look like:
-```typescript
-const API_URL = "https://abc123.execute-api.us-east-1.amazonaws.com/prod";
-```
+## Step 5.2: Upload Updated Frontend to S3
 
-### Step 5.2: Rebuild and Redeploy
+1. Go to your S3 bucket in AWS Console
+2. **Delete all files** (select all with checkbox, delete)
+3. **Upload new files** from the updated `dist/public/` folder
+4. Click **Upload** and wait for completion
 
-1. In terminal, run: `npm run build`
-2. Go to your S3 bucket in AWS Console
-3. Delete all old files (select all → Delete)
-4. Upload the new files from `client/dist/` folder again
+✅ Frontend connected and uploaded? Move to **PHASE 6**
 
-### Step 5.3: Test Your Website
+---
 
-1. Go to your S3 website URL from Phase 4.6
-2. Your portfolio should now load!
-3. Try logging in with:
+# PHASE 6: Testing Your Deployment
+
+**Time: 10 minutes**
+
+## Step 6.1: Test Login
+
+1. Open your S3 website URL in a browser (from Phase 4.5)
+2. You should see your portfolio homepage
+3. Look for **Admin Login** button or link
+4. Click it and try to login with:
    - **Username**: `Pavan56`
    - **Password**: `Pavanreddy56@`
 
----
+## Step 6.2: Test API Endpoints
 
-## Phase 6: (Optional) Set Up CloudFront CDN (10 minutes)
+If login works, all APIs work! But to manually test:
 
-CloudFront makes your website faster globally with HTTPS.
-
-### Step 6.1: Create CloudFront Distribution
-
-1. Go to https://console.aws.amazon.com
-2. Search for **CloudFront**
-3. Click on **CloudFront**
-4. Click **Create distribution** button
-5. **Origin domain**: Select your S3 bucket from the dropdown
-6. **Name**: `portfolio-cloudfront`
-7. **Viewer protocol policy**: `Redirect HTTP to HTTPS`
-8. **Default root object**: `index.html`
-9. Scroll to bottom and click **Create distribution**
-
-Wait a few minutes for it to deploy (status will change from "Deploying" to "Enabled").
-
-### Step 6.2: Get CloudFront URL
-
-1. In CloudFront distributions list, find your distribution
-2. Copy the **Distribution domain name** (looks like `d12345.cloudfront.net`)
-3. Your website is now available at: `https://d12345.cloudfront.net`
-
-This URL is much faster globally and has HTTPS by default!
-
----
-
-## Your Live URLs
-
-After completing all phases:
-
-| What | URL |
-|------|-----|
-| **Website** | `http://my-portfolio-site-pavan.s3-website-us-east-1.amazonaws.com` |
-| **Website (faster with HTTPS)** | `https://d12345.cloudfront.net` |
-| **API** | `https://abc123.execute-api.us-east-1.amazonaws.com/prod` |
-| **Admin Login** | Visit your website → click Admin panel |
-
----
-
-## Testing Your Deployment
-
-### Test 1: Visit Your Website
-1. Go to your S3 website URL
-2. You should see your portfolio homepage
-3. Check that it looks correct
-
-### Test 2: Check API Endpoints
-Open your browser console (F12) and test these:
+1. Open your browser's **Developer Console** (F12)
+2. Go to **Console** tab
+3. Paste and run this command:
 
 ```javascript
-// Get hero section
-fetch("https://abc123.execute-api.us-east-1.amazonaws.com/prod/api/hero")
-  .then(r => r.json())
-  .then(console.log)
-
-// Get skills
-fetch("https://abc123.execute-api.us-east-1.amazonaws.com/prod/api/skills")
-  .then(r => r.json())
-  .then(console.log)
+fetch('https://YOUR-API-URL/api/hero', {
+  headers: { 'Authorization': 'Bearer YOUR-JWT-TOKEN' }
+}).then(r => r.json()).then(d => console.log(d))
 ```
 
-### Test 3: Test Admin Login
-1. Go to your website
-2. Click the "Admin" link or go to `/admin` path
-3. Login with:
-   - Username: `Pavan56`
-   - Password: `Pavanreddy56@`
-4. You should see the admin dashboard
+Replace:
+- `YOUR-API-URL` with your API Gateway URL from Phase 3.7
+- `YOUR-JWT-TOKEN` with the token you got after login
+
+You should see hero data returned!
+
+## Step 6.3: Verify All Tables
+
+1. Go to DynamoDB in AWS Console
+2. Click **Tables**
+3. Click on `portfolio-admins` table
+4. Click **Explore items**
+5. You should see the admin user created after first login
+
+✅ Everything working? Your deployment is complete!
 
 ---
 
-## Updating Your Content
+# PHASE 7: Managing Your Content
 
-### Update Blog Posts, Projects, Skills
-1. Log in to admin panel on your website
-2. Use the forms to add/edit/delete content
-3. All changes are saved to DynamoDB automatically
+**Time: Ongoing**
 
-### Update Your Code
-1. Make changes to your project locally
-2. Run: `npm run build`
-3. Upload new files to S3 bucket (delete old ones first)
-4. Hard refresh your website (Ctrl+Shift+R)
+## Add Content Through Admin Panel
 
-### Update Lambda Function
-1. Make code changes to `server/` folder
-2. Rebuild: `npm run build`
-3. Create new ZIP file with updated `server/` and `shared/` folders
-4. Go to Lambda console → Click your function
-5. Upload new ZIP file
-6. Click **Deploy**
+1. Login to your website (admin login)
+2. Go to Dashboard
+3. You can now:
+   - ✏️ Edit hero section
+   - ➕ Add skills
+   - ➕ Add projects
+   - ✍️ Write blog posts
+   - 🔗 Add social links
+   - 📄 Upload resume
+   - 📨 View contact messages
+
+All content is automatically saved to DynamoDB!
 
 ---
 
-## Troubleshooting
+# PHASE 8: Updating Your Website
 
-| Problem | Solution |
-|---------|----------|
-| **Website shows 404 error** | Make sure you uploaded files to S3 and enabled static website hosting |
-| **API returns 502 error** | Check Lambda function → Logs → CloudWatch Logs for errors |
-| **Login doesn't work** | Verify admin user exists in DynamoDB `portfolio-admins` table |
-| **Styles look broken** | Hard refresh browser (Ctrl+Shift+R) or wait for CloudFront cache to clear (15 min) |
-| **CORS errors in browser console** | Verify CORS is enabled in API Gateway (Phase 3.5) |
-| **Can't upload to S3** | Make sure bucket is public and you have bucket policy set |
+**When you want to make changes:**
+
+1. Edit your files in your project (React components, CSS, etc.)
+2. Run `npm run build` to rebuild
+3. Upload new files from `dist/public/` to S3
+4. Refresh your website in the browser
 
 ---
 
-## Cost Estimate
+# Troubleshooting
 
-- **DynamoDB**: $0 - $5/month (pay-per-request)
-- **Lambda**: $0 - $1/month (1M free requests/month)
-- **API Gateway**: $0 - $3.50/month (3.5M free calls/month)
-- **S3**: $0 - $1/month (small site storage)
-- **CloudFront** (optional): $0 - $5/month
+## Problem: "FAILED TO FETCH" when logging in
 
-**Total: $0 - $15/month** depending on traffic
+**Solution**:
+1. Check that your API URL in `queryClient.ts` is correct
+2. Make sure the first part matches your actual API Gateway URL
+3. Rebuild and re-upload to S3
+
+## Problem: Login succeeds but dashboard is empty
+
+**Solution**:
+1. Go to DynamoDB → Tables
+2. Check if the table exists and has the correct name
+3. Lambda might not have created the admin user - try logging in again
+
+## Problem: Can't upload files to S3
+
+**Solution**:
+1. Check bucket permissions
+2. Make sure bucket name is globally unique
+3. Check that you have public access enabled
+
+## Problem: API Gateway returning 403 errors
+
+**Solution**:
+1. Check Lambda has correct handler: `index.handler`
+2. Check environment variable `SESSION_SECRET` is set
+3. Check Lambda timeout is set to 30 seconds or more
+
+## Problem: Website shows blank page
+
+**Solution**:
+1. Go to S3 bucket
+2. Make sure `index.html` is uploaded
+3. Check Static Website Hosting is enabled
+4. Try a different browser or clear cache (Ctrl+Shift+Delete)
 
 ---
 
-## Need to Delete Everything?
+# Admin Credentials
 
-If you want to delete your deployment and stop charges:
-
-1. **Delete S3 bucket**: S3 → Select bucket → Delete
-2. **Delete CloudFront distribution** (if created): CloudFront → Select distribution → Delete
-3. **Delete API Gateway**: API Gateway → Select API → Delete
-4. **Delete Lambda function**: Lambda → Select function → Delete
-5. **Delete DynamoDB tables**: DynamoDB → Tables → Delete each table
-6. **Delete IAM role**: IAM → Roles → Select role → Delete
-
----
-
-## Admin Credentials
+Your admin login credentials are:
 
 - **Username**: `Pavan56`
 - **Password**: `Pavanreddy56@`
 
-These are stored in the `portfolio-admins` DynamoDB table.
+⚠️ **Change these after first login** (when admin panel is fully working)
 
 ---
 
-## Support & Resources
+# Key URLs
+
+Save these for reference:
+
+- **AWS Console**: https://console.aws.amazon.com
+- **Your Website**: `http://my-portfolio-site-pavan-2024.s3-website-ap-south-1.amazonaws.com`
+- **Lambda Function**: AWS Console → Lambda → `portfolio-api`
+- **API Gateway**: AWS Console → API Gateway → `portfolio-api` → Stages → prod
+- **DynamoDB Tables**: AWS Console → DynamoDB → Tables
+
+---
+
+# Cost Breakdown (Monthly)
+
+| Service | Usage | Cost |
+|---------|-------|------|
+| Lambda | 1M requests/month | FREE (within free tier) |
+| DynamoDB | ~1M read units | ~$0.25 |
+| API Gateway | 1M calls | ~$3.50 |
+| S3 Storage | ~100MB | ~$0.02 |
+| S3 Requests | Minimal | <$0.10 |
+| **TOTAL** | | **~$3.87/month** |
+
+---
+
+# Success Indicators
+
+✅ You'll know deployment succeeded when:
+
+- [ ] You can visit your website (S3 URL) and see your portfolio
+- [ ] "Admin Login" button appears on the website
+- [ ] You can login with your credentials
+- [ ] Admin dashboard loads with options to manage content
+- [ ] You can add a test skill and it appears
+- [ ] Contact form submissions are saved to DynamoDB
+
+---
+
+# Next Steps
+
+1. **Test everything** - Follow Phase 6 Testing
+2. **Customize content** - Use admin panel to add your real portfolio data
+3. **Share your website** - Tell people about your live portfolio
+4. **Monitor costs** - Check AWS Billing every month
+
+---
+
+# Support & Resources
 
 - **AWS Lambda Docs**: https://docs.aws.amazon.com/lambda/
 - **DynamoDB Docs**: https://docs.aws.amazon.com/dynamodb/
 - **API Gateway Docs**: https://docs.aws.amazon.com/apigateway/
 - **S3 Docs**: https://docs.aws.amazon.com/s3/
-- **CloudFront Docs**: https://docs.aws.amazon.com/cloudfront/
+
+---
+
+**Congratulations! Your serverless portfolio is now deployed on AWS! 🚀**
